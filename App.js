@@ -1,19 +1,31 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ * @flow
+ */
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+import React, { Component } from 'react';
+import { StyleSheet, View, StatusBar } from 'react-native';
+import Colors from './app/theme/colors';
+import FirebaseConfig from './app/modulos/Database/Firebase';
+import * as Firebase from 'firebase';
+import Navegacion from './app/modulos/Navegacion/Nav'
+
+Firebase.initializeApp(FirebaseConfig);
+export default class App extends Component {
+
+  render(){
+    return <View style={styles.container}>
+      <StatusBar backgroundColor={Colors.primary} barStyle='light-content' />
+      <Navegacion />
     </View>
-  );
+  }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  container:{
+    flex: 1
+  }
 });
