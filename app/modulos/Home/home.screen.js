@@ -1,8 +1,9 @@
-import React, { Component, useState } from 'react'
-import { View, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native'
-import { Card, Icon, Text, Button, Image } from  'react-native-elements'
+import React, { Component, useState } from 'react';
+import { View, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
+import { Card, Icon, Text, Button, Image } from  'react-native-elements';
 import { SliderBox } from 'react-native-image-slider-box';
-import Colors from '../../theme/colors'
+import Colors from '../../theme/colors';
+import normalize from 'react-native-normalize';
 
 const DeviceWidth = Dimensions.get('screen').width
 
@@ -22,74 +23,25 @@ export default class home extends Component {
     }
 
     render(){
+        let ancho = DeviceWidth - 20
         console.log(this.state.images)
         return <View style={styles.container}>
             <ScrollView>
-                <SliderBox images={this.state.images} />
-                <View style={{ paddingHorizontal: 15, marginTop: 10, marginBottom: 10 }}>
-                    <Text style={{ fontSize: 18, color:'black', borderBottomWidth: 2, borderColor: '#ccc' }}>Categorías</Text>
+                <SliderBox sliderBoxHeight={normalize(150, 'height')} images={this.state.images} />
+                <View style={{ paddingHorizontal: normalize(15), marginVertical: normalize(10, 'height') }}>
+                    <Text style={{ fontSize: normalize(18), color:'black', fontWeight:'bold', borderBottomWidth: normalize(2, 'height'), borderColor: '#ccc' }}>Categorías</Text>
                 </View>
-                <Image
-                    source={require('../../assets/images/Logo.png')}
-                    style={{ width: 410, height: 390 }}
-                    resizeMode="contain"
-                >
-                <View style={{ flexDirection: 'row', justifyContent:'flex-end', marginTop: 5 }}>
+                <View style={{ flexDirection: 'row', justifyContent:'flex-end', marginTop: normalize(5, 'height') }}>
                     <TouchableOpacity>
-                    <View style={{ flexDirection: 'row',alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', borderTopLeftRadius: 35, borderBottomLeftRadius: 35, borderWidth: 1, borderColor:'#ccc' }}>
-                        <Icon reverse name="beer" type="material-community" size={25} color='#D5DBDB' />
-                        <View style={{ width: DeviceWidth - 100, paddingHorizontal: 5 }}>
-                            <Text h4 style={{  color:'white' }}>Aguardientes</Text>
-                            <Text numberOfLines={1} ellipsizeMode='tail' style={{ color:'white', fontSize: 12 }}>Pilsen, Aguila, Club Colombia, Corona, Budweiser, Heineken, Sol</Text>
-                        </View>
+                    <View style={styles.categoria}>
+                        <Image
+                            source={require('../../assets/categorias/AGUARDIENTE.png')}
+                            style={{ height: normalize(100, 'height') }}
+                            resizeMode="contain" 
+                        />
                     </View>
                     </TouchableOpacity>
                 </View>
-                <View style={{ flexDirection: 'row', justifyContent:'flex-end', marginTop: 5 }}>
-                    <TouchableOpacity>
-                    <View style={{ flexDirection: 'row',alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', borderTopLeftRadius: 35, borderBottomLeftRadius: 35, borderWidth: 1, borderColor:'#ccc' }}>
-                        <Icon reverse name="cup" type="material-community" size={25} color='#F39C12' />
-                        <View style={{ width: DeviceWidth - 100, paddingHorizontal: 5 }}>
-                            <Text h4 style={{  color:'white' }}>Rones</Text>
-                            <Text numberOfLines={1} ellipsizeMode='tail' style={{ color:'white', fontSize: 12 }}>Pilsen, Aguila, Club Colombia, Corona, Budweiser, Heineken, Sol</Text>
-                        </View>
-                    </View>
-                    </TouchableOpacity>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent:'flex-end', marginTop: 5 }}>
-                    <TouchableOpacity>
-                    <View style={{ flexDirection: 'row',alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', borderTopLeftRadius: 35, borderBottomLeftRadius: 35, borderWidth: 1, borderColor:'#ccc' }}>
-                        <Icon reverse name="glass-stange" type="material-community" size={25} color='#52BE80' />
-                        <View style={{ width: DeviceWidth - 100, paddingHorizontal: 5 }}>
-                            <Text h4 style={{  color:'white' }}>Tequilas</Text>
-                            <Text numberOfLines={1} ellipsizeMode='tail' style={{ color:'white', fontSize: 12 }}>Pilsen, Aguila, Club Colombia, Corona, Budweiser, Heineken, Sol</Text>
-                        </View>
-                    </View>
-                    </TouchableOpacity>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent:'flex-end', marginTop: 5 }}>
-                    <TouchableOpacity>
-                    <View style={{ flexDirection: 'row',alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', borderTopLeftRadius: 35, borderBottomLeftRadius: 35, borderWidth: 1, borderColor:'#ccc' }}>
-                        <Icon reverse name="glass-wine" type="material-community" size={25} color='#C40A91' />
-                        <View style={{ width: DeviceWidth - 100, paddingHorizontal: 5 }}>
-                            <Text h4 style={{  color:'white' }}>Vinos</Text>
-                            <Text numberOfLines={1} ellipsizeMode='tail' style={{ color:'white', fontSize: 12 }}>Pilsen, Aguila, Club Colombia, Corona, Budweiser, Heineken, Sol</Text>
-                        </View>
-                    </View>
-                    </TouchableOpacity>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent:'flex-end', marginTop: 5, marginBottom: 5 }}>
-                    <TouchableOpacity>
-                    <View style={{ flexDirection: 'row',alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', borderTopLeftRadius: 35, borderBottomLeftRadius: 35, borderWidth: 1, borderColor:'#ccc' }}>
-                        <Icon reverse name="glass-mug" type="material-community" size={25} color='#F1C40F' />
-                        <View style={{ width: DeviceWidth - 100, paddingHorizontal: 5 }}>
-                            <Text h4 style={{  color:'white' }}>Cervezas</Text>
-                            <Text numberOfLines={1} ellipsizeMode='tail' style={{ color:'white', fontSize: 12 }}>Pilsen, Aguila, Club Colombia, Corona, Budweiser, Heineken, Sol</Text>
-                        </View>
-                    </View>
-                    </TouchableOpacity>
-                </View>
-                </Image>
             </ScrollView>
         </View>
     }
@@ -97,6 +49,11 @@ export default class home extends Component {
 
 const styles = StyleSheet.create({
     container:{
-        flex:1,
+        flex: 1,
+    },
+    categoria :{
+        flex: 1,
+        backgroundColor: 'red',
+        marginHorizontal: normalize(10)
     }
 })

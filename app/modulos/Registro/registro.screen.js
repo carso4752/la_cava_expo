@@ -6,7 +6,6 @@ import * as Firebase from 'firebase';
 import Toast, {DURATION} from 'react-native-easy-toast';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import normalize from 'react-native-normalize';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const DeviceScreen = Dimensions.get('screen')
 
@@ -79,7 +78,7 @@ export default class Registro extends Component {
                         type='material-community'
                         name='at'
                         color='grey'
-                        size={normalize(22)}
+                        size={normalize(25)}
                         />
                     }
                     onChangeText={ text => {
@@ -104,7 +103,7 @@ export default class Registro extends Component {
                         type='material-community'
                         name={hidePassword ? 'eye-off-outline': 'eye'}
                         color='grey'
-                        size={22}
+                        size={normalize(25)}
                         onPress={()=> this.setState({ hidePassword: !hidePassword })}
                         />
                     }
@@ -129,7 +128,7 @@ export default class Registro extends Component {
                         type='material-community'
                         name={hideConfirmPassword ? 'eye-off-outline': 'eye'}
                         color='grey'
-                        size={normalize(22)}
+                        size={normalize(25)}
                         onPress={()=> this.setState({ hideConfirmPassword: !hideConfirmPassword })}
                         />
                     }

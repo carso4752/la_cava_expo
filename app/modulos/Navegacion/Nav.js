@@ -1,9 +1,8 @@
 import React from 'react';
 import { createAppContainer, createStackNavigator, createBottomTabNavigator, createSwitchNavigator } from 'react-navigation';
-import Icon from 'react-native-vector-icons/FontAwesome'
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons'
 import Colors from '../../theme/colors'
-import { Image } from 'react-native-elements'
+import { Image, Icon } from 'react-native-elements'
 
 import ProductoScreen from '../Productos/productos.screen';
 import HomeScreen from '../Home/home.screen';
@@ -29,7 +28,7 @@ const HomeStack = createStackNavigator({
       ),
       headerRight: (
         <View style={{ marginRight: 10 }}>
-          <IconM name="cart" type="material-community" size={25} />
+          <IconM name="cart-outline" type="material-community" size={28} />
         </View>
       )
     })
@@ -52,7 +51,7 @@ const BuscadorStack = createStackNavigator({
       ),
       headerRight: (
         <View style={{ marginRight: 10 }}>
-          <IconM name="cart" type="material-community" size={25} />
+          <IconM name="cart-outline" type="material-community" size={28} />
         </View>
       )
     })
@@ -75,7 +74,7 @@ const ProductosStack = createStackNavigator({
       ),
       headerRight: (
         <View style={{ marginRight: 10 }}>
-          <IconM name="cart" type="material-community" size={25} />
+          <IconM name="cart-outline" type="material-community" size={28} />
         </View>
       )
     })
@@ -98,7 +97,7 @@ const PerfilStack = createStackNavigator({
       ),
       headerRight: (
         <View style={{ marginRight: 10 }}>
-          <IconM name="cart" type="material-community" size={25} />
+          <IconM name="cart-outline" type="material-community" size={28} />
         </View>
       )
     })
@@ -112,7 +111,7 @@ const RegistroStack = createStackNavigator({
       title: "Registro",
       headerLeft: (
         <View style={{ marginLeft: 20, flexDirection: 'row', alignItems:'center' }}>
-          <IconM name={'arrow-left'} size={25} onPress={ () => navigation.navigate('Login') } />  
+          <IconM name={'arrow-left'} size={28} onPress={ () => navigation.navigate('Login') } />  
         </View>
       ),
     })
@@ -125,7 +124,7 @@ const RootStack = createBottomTabNavigator({
       navigationOptions:({ navigation }) => ({
         tabBarLabel:"Inicio",
         tabBarIcon: ({ tintColor }) => (
-          <Icon name={'home'} type={'font-awesome'} size={25} color={tintColor} />
+          <Icon name={navigation.isFocused() ? 'human-handsup' : 'home-outline'} type={'material-community'} size={28} color={tintColor} />
         )
       })
     },
@@ -134,7 +133,7 @@ const RootStack = createBottomTabNavigator({
       navigationOptions:({ navigation }) => ({
         tabBarLabel:"Buscar",
         tabBarIcon: ({ tintColor }) => (
-          <Icon name={'search'} type={'font-awesome'} size={25} color={tintColor} />
+          <Icon name={navigation.isFocused() ? 'keyboard' : 'magnify'} type={'material-community'} size={28} color={tintColor} />
         )
       })
     },
@@ -143,7 +142,7 @@ const RootStack = createBottomTabNavigator({
       navigationOptions:({ navigation }) => ({
         tabBarLabel:"Productos",
         tabBarIcon: ({ tintColor }) => (
-          <Icon name={'home'} type={'font-awesome'} size={25} color={tintColor} />
+          <Icon name={navigation.isFocused() ? 'glass-cocktail' : 'tag-outline'} type={'material-community'} size={28} color={tintColor} />
         )
       })
     },
@@ -152,7 +151,7 @@ const RootStack = createBottomTabNavigator({
       navigationOptions:({ navigation }) => ({
         tabBarLabel:"Perfil",
         tabBarIcon: ({ tintColor }) => (
-          <Icon name={'user'} type={'font-awesome'} size={25} color={tintColor} />
+          <Icon name={navigation.isFocused() ? 'account-circle' : 'account-outline'} type={'material-community'} size={28} color={tintColor} />
         )
       })
     }
@@ -168,8 +167,8 @@ const RootStack = createBottomTabNavigator({
 )
 
 const AppNavigator = createSwitchNavigator({
-  Login: LoginScreen,
   Tabs: RootStack,
+  Login: LoginScreen,
   Registro: RegistroStack,
 });
 

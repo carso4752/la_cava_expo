@@ -6,7 +6,6 @@ import * as Firebase from 'firebase';
 import Toast, {DURATION} from 'react-native-easy-toast';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import normalize from 'react-native-normalize';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const DeviceScreen = Dimensions.get('screen')
 
@@ -44,7 +43,7 @@ export default class Login extends Component {
             this.refs.toastError.show('Complete todos los campos', 1000);
         } else if(!mailformat.test(email)){
             this.refs.toastError.show('Correo electronico invalido', 1000);
-        } else if (password.length < 6 || confirmPassword.length < 6){
+        } else if (password.length < 6){
             this.refs.toastError.show('La contraseña debe contener minimo 6 caracteres', 1000);
         } else {
             Firebase.auth().signInWithEmailAndPassword(validacion.email, validacion.password).then(result => {
@@ -94,7 +93,7 @@ export default class Login extends Component {
                         type='material-community'
                         name='at'
                         color='grey'
-                        size={normalize(22)}
+                        size={normalize(25)}
                         />
                     }
                     onChangeText={ text => {
@@ -119,7 +118,7 @@ export default class Login extends Component {
                         type='material-community'
                         name={hidePassword ? 'eye-off-outline': 'eye'}
                         color='grey'
-                        size={normalize(22)}
+                        size={normalize(25)}
                         onPress={()=> this.setState({ hidePassword: !hidePassword })}
                         />
                     }
