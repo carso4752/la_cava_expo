@@ -21,12 +21,14 @@ export default class Registro extends Component {
                 confirmPassword: ""
             },
             hideConfirmPassword: true,
-            hidePassword: true
+            hidePassword: true,
+            registro: false
         }
     }
 
-    _renderRegistro = () => {
+    _renderRegistro = async() => {
         const { password, confirmPassword, email } = this.state.FormValue
+        const { registro } = this.state
 
         let mailformat = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
 
@@ -37,13 +39,17 @@ export default class Registro extends Component {
         } else if(password.length < 6 || confirmPassword.length < 6){
             this.refs.toastError.show('La contraseña debe contener minimo 6 caracteres', 1000);
         } else if(password == confirmPassword){
+            await this.setState({ registro: !registro })
             Firebase.auth().createUserWithEmailAndPassword(email, password).then(result => {
                 this.refs.toast.show('Registro Exitoso', 500, () =>{
+                    this.setState({ registro: false })
                     this.props.navigation.navigate('Login')
                 });
             }).catch(err => {
                 console.log("Error en el Registro", err)
-                this.refs.toastError.show('El correo ya esta en uso', 1000);
+                this.refs.toastError.show('El correo ya esta en uso', 500, ()=>{
+                    this.setState({ registro: false })
+                });
             })
         } else{
             this.refs.toastError.show('Las contraseñas no coinciden', 1000);
@@ -51,7 +57,7 @@ export default class Registro extends Component {
     }
 
     render() {
-        const { FormValue, hideConfirmPassword, hidePassword } = this.state
+        const { FormValue, hideConfirmPassword, hidePassword, registro } = this.state
         const { password, confirmPassword, email } = this.state.FormValue
         let toast = (DeviceScreen.height < 600 ? 130 : 180)
         return <>
@@ -139,11 +145,14 @@ export default class Registro extends Component {
                     }}
                     autoCapitalize={"none"}
                 />
-                <Button 
+                {!registro ? <Button 
                     buttonStyle={{ backgroundColor: Colors.Menu }} 
                     containerStyle={styles.button} title="Registrar" 
                     onPress={() => this._renderRegistro()} 
-                />
+                /> : 
+                <View style={{ justifyContent:'center', marginVertical: normalize(20, 'height') }}>
+                    <ActivityIndicator size="large" animating={true} color={Colors.primary} />
+                </View>}
                 </KeyboardAwareScrollView>
                 <Toast
                     ref="toastError"

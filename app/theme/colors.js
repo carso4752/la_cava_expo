@@ -4,7 +4,7 @@ const Colors = {
     Secundary: "#FF8F00",
     primaryDark: '#E67E22',
     primaryLight: '#F1C40F',
-    accent: '#1FF9B7',
+    accent: '#F95642',
     primaryText: '#2E4053',
     primaryButton: '#17A589',
     Menu: "#273245",

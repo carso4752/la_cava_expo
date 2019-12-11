@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Image, Icon, Button, colors } from 'react-native-elements'
 import normalize from 'react-native-normalize';
-import { View, Text, StyleSheet, ScrollView, Dimensions, Modal, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, Modal, Platform, ImageBackground } from 'react-native';
 import TouchableNative from '../shared/touchableNative'
 import Colors from '../../theme/colors'
 
@@ -47,38 +47,40 @@ export default class productos extends Component {
     }
 
     renderModal(){
-        let IOS = Platform.OS === "ios"
-        console.log(Platform)
         const { modalVisible, cantidad } = this.state
         const { precio, nombre } = this.state.selectProd
-
+        let costo = (precio*cantidad).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
         return <Modal
-            animationType="fade"
+            animationType="slide"
             transparent={true}
             visible={modalVisible}
             onRequestClose={() => {
                 this.setState({ modalVisible: !modalVisible})
         }}>
-            <View style={styles.containerModal}>
-                <View style={styles.modal}>
-                    {Platform.OS === "ios" && <Icon type='material-community' name='close' color={Colors.Menu} size={normalize(25)} />}
-                    <View style={{ alignItems:'center', marginBottom: normalize(40, 'height') }}>
-                        <Image style={styles.imageModal} resizeMode='cover' source={require('../../assets/categorias/OTROS.png')} /> 
-                        <Text style={{ fontSize: normalize(18)}}>Producto: {nombre}</Text>
-                    </View>
-                    <View style={{ marginBottom: normalize(40, 'height') }}>
-                        <Text style={{ fontSize: normalize(18)}}>Precio Total: $ {precio*cantidad}</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row' , justifyContent: 'space-around', marginVertical: normalize(5, 'height') }}>
-                        <View style={{ flexDirection: 'row' }}>
-                        <Text style={styles.textCantidad}>{cantidad}</Text>
+            <ImageBackground style={{ width: '100%', height: '100%'}} resizeMode='cover' source={require('../../../assets/splash.png')}> 
+                <View style={styles.containerModal}>
+                    <View style={styles.modal}>
+                        {Platform.OS === "ios" && <Icon type='material-community' name='close' color={Colors.Menu} size={normalize(25)} />}
+                        <View style={{ alignItems:'center', marginBottom: normalize(15, 'height') }}>
+                            <Image style={styles.imageModal} resizeMode='stretch' source={require('../../assets/productos/AGUARDIENTE-ANT-BOTELLA-SIN-AZUCAR.png')} /> 
+                            <Text style={{ fontSize: normalize(16), marginTop: normalize(5, 'height')}}>{nombre}</Text>
                         </View>
-                        <Button title="Agregar " containerStyle={{ justifyContent: 'center' }} buttonStyle={{ backgroundColor: Colors.Menu }} iconRight={true} icon={
-                            <Icon type='material-community' name='send' color={'#FFF'} size={normalize(20)} /> 
-                        }/>
+                        <View style={{ flexDirection: 'row' , justifyContent: 'space-around', marginVertical: normalize(15, 'height') }}>
+                            <View style={{ flexDirection: 'row', alignItems:'center', paddingBottom: normalize(2, 'height'), borderWidth: 0.3, borderRadius: normalize(5) }}>
+                                <Icon reverse  name='minus' type='material-community' color={Colors.accent} size={normalize(12)} onPress={()=>{
+                                    let restar = cantidad == 1 ? 1 : cantidad - 1 
+                                    this.setState({ cantidad: restar })
+                                }} />
+                                <Text style={styles.textCantidad}>{cantidad}</Text>
+                                <Icon reverse name='plus' type='material-community' color={Colors.primaryButton} size={normalize(12)} onPress={()=>{
+                                    this.setState({ cantidad: cantidad + 1 })
+                                }}/>
+                            </View>
+                            <Button title={"Agregar $"+costo} buttonStyle={{ backgroundColor: Colors.Menu }}/>
+                        </View>
                     </View>
                 </View>
-            </View>
+            </ImageBackground>
         </Modal>
     }
 
@@ -90,19 +92,19 @@ export default class productos extends Component {
                 {product.map((item, index)=>{
                     let costo = (item.precio).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
                     return <View key={"filtro_"+ index} style={styles.producto}>
-                            <Image style={styles.imageProduct} resizeMode='cover' source={require('../../assets/categorias/OTROS.png')} /> 
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                <View style={{ flexGrow: 2 }}>
-                                    <Text style={{ fontSize: normalize(16) }}>{item.nombre}</Text>
-                                    <Text style={{ fontSize: normalize(12) }}>$ {costo}</Text>
-                                </View>
-                                <View style={{ flexGrow: 1 }}>
-                                    <Icon type='material-community' name='plus-circle' color={Colors.Menu} size={normalize(25)} onPress={()=>{
-                                        this.setState({ modalVisible: !modalVisible, selectProd: item })
-                                    }} />
-                                </View>
+                        <Image placeholder='Hola' containerStyle={{ borderWidth: 0.2, borderRadius: normalize(5)}} style={styles.imageProduct} resizeMode='contain' source={require('../../assets/productos/AGUARDIENTE-ANT-BOTELLA-SIN-AZUCAR.png')} /> 
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
+                            <View style={{ flexGrow: 2 }}>
+                                <Text style={{ fontSize: normalize(16) }}>{item.nombre}</Text>
+                                <Text style={{ fontSize: normalize(12) }}>$ {costo}</Text>
+                            </View>
+                            <View style={{ flexGrow: 1 }}>
+                                <Icon type='material-community' name='plus-circle' color={Colors.Menu} size={normalize(25)} onPress={()=>{
+                                    this.setState({ modalVisible: !modalVisible, selectProd: item })
+                                }} />
                             </View>
                         </View>
+                    </View>
                 })}
             </View>
         </ScrollView>
@@ -127,24 +129,23 @@ const styles = StyleSheet.create({
         height: normalize(80, 'height')
     },
     imageModal:{
-        width: normalize(190),
-        height: normalize(150, 'height')
+        width: normalize(160),
+        height: normalize(130, 'height')
     },
     containerModal:{
         flex: 1, 
         justifyContent:'flex-end', 
-        backgroundColor: 'rgba(170,183,184, 0.5)',
     },
     modal:{
-        backgroundColor: '#FFF', 
+        backgroundColor: 'rgba(255,255,255, 0.9)', 
         marginHorizontal: normalize(5), 
-        borderTopLeftRadius: normalize(15),
-        borderTopRightRadius: normalize(15),
+        borderTopLeftRadius: normalize(30),
+        borderTopRightRadius: normalize(30),
         paddingTop: normalize(20, 'height'),
     },
     textCantidad:{
-        fontSize: normalize(30),
+        fontSize: normalize(25),
         fontWeight: 'bold',
-        borderWidth: normalize(1),
+        marginHorizontal: normalize(20),
     }
 })

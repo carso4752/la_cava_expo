@@ -19,7 +19,8 @@ export default class Login extends Component {
               password: ""
             },
             login: null,
-            hidePassword: true
+            hidePassword: true,
+            ingreso: false
         }
     }
 
@@ -34,8 +35,9 @@ export default class Login extends Component {
         })
     }
 
-    _renderIngreso(){
+    async _renderIngreso(){
         const { password, email } = this.state.FormValue
+        const { ingreso } = this.state
 
         let mailformat = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
 
@@ -46,19 +48,23 @@ export default class Login extends Component {
         } else if (password.length < 6){
             this.refs.toastError.show('La contraseña debe contener minimo 6 caracteres', 1000);
         } else {
+            await this.setState({ ingreso: !ingreso })
             Firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
                 this.refs.toast.show('Login Exitoso', 500, () =>{
+                    this.setState({ ingreso: false })
                     this.props.navigation.navigate('Home')
                 });
             }).catch(err => {
                 console.log("Error en el Login", err)
-                this.refs.toastError.show('Usuario y/o contraseña invalido', 1000);
+                this.refs.toastError.show('Usuario y/o contraseña invalido', 500, ()=>{
+                    this.setState({ ingreso: false })
+                });
             })
         }
     }
 
     render(){
-        const { login, FormValue, hidePassword } = this.state
+        const { login, FormValue, hidePassword, ingreso } = this.state
         const { password, email } = this.state.FormValue
         let toast = (DeviceScreen.height < 600 ? 90 : 130)
         if (login == null){
@@ -129,12 +135,15 @@ export default class Login extends Component {
                     }}
                     autoCapitalize={"none"}
                 />
-                <Button
+                {!ingreso ? <Button
                     buttonStyle={{ backgroundColor: Colors.Menu }}
                     containerStyle={styles.button}
                     title="Iniciar Sesion"
                     onPress={this._renderIngreso.bind(this)}
-                />
+                /> : 
+                <View style={{ justifyContent:'center', marginVertical: normalize(20, 'height') }}>
+                    <ActivityIndicator size="large" animating={true} color={Colors.primary} />
+                </View>}
                 <Text style={{ color: Colors.primaryText, alignSelf: 'center' }}>
                     ¿Aún no tienes una cuenta?
                     <Text 
