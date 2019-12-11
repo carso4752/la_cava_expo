@@ -3,7 +3,7 @@ import { createAppContainer, createStackNavigator, createBottomTabNavigator, cre
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons'
 import Colors from '../../theme/colors'
 import { Image, Icon } from 'react-native-elements'
-
+import normalize from 'react-native-normalize';
 import ProductoScreen from '../Productos/productos.screen';
 import HomeScreen from '../Home/home.screen';
 import BuscadorScreen from '../Buscador/buscador.screen';
@@ -18,17 +18,17 @@ const HomeStack = createStackNavigator({
     navigationOptions: ({ navigation }) => ({
       title: "Inicio",
       headerLeft: (
-        <View style={{ marginLeft: 20 }}>
+        <View style={{ marginLeft: normalize(20) }}>
           <Image 
             source={require('../../assets/images/logo_laCava.png')} 
-            style={{ width: 35, height: 35 }}
+            style={{ width: normalize(35), height: normalize(35, 'height') }}
             resizeMode="contain"
           />
         </View>
       ),
       headerRight: (
-        <View style={{ marginRight: 10 }}>
-          <IconM name="cart-outline" type="material-community" size={28} />
+        <View style={{ marginRight: normalize(10) }}>
+          <IconM name="cart-outline" type="material-community" size={normalize(28)} />
         </View>
       )
     })
@@ -41,17 +41,17 @@ const BuscadorStack = createStackNavigator({
     navigationOptions: ({ navigation }) => ({
       title: "Buscador",
       headerLeft: (
-        <View style={{ marginLeft: 20 }}>
+        <View style={{ marginLeft: normalize(20) }}>
           <Image 
             source={require('../../assets/images/logo_laCava.png')} 
-            style={{ width: 35, height: 35 }}
+            style={{ width: normalize(35), height: normalize(35, 'height') }}
             resizeMode="contain"
           />
         </View>
       ),
       headerRight: (
-        <View style={{ marginRight: 10 }}>
-          <IconM name="cart-outline" type="material-community" size={28} />
+        <View style={{ marginRight: normalize(10) }}>
+          <IconM name="cart-outline" type="material-community" size={normalize(28)} />
         </View>
       )
     })
@@ -64,17 +64,17 @@ const ProductosStack = createStackNavigator({
     navigationOptions: ({ navigation }) => ({
       title: "Productos",
       headerLeft: (
-        <View style={{ marginLeft: 20 }}>
+        <View style={{ marginLeft: normalize(20) }}>
           <Image 
             source={require('../../assets/images/logo_laCava.png')} 
-            style={{ width: 35, height: 35 }}
+            style={{ width: normalize(35), height: normalize(35, 'height') }}
             resizeMode="contain"
           />
         </View>
       ),
       headerRight: (
-        <View style={{ marginRight: 10 }}>
-          <IconM name="cart-outline" type="material-community" size={28} />
+        <View style={{ marginRight: normalize(10) }}>
+          <IconM name="cart-outline" type="material-community" size={normalize(28)} />
         </View>
       )
     })
@@ -87,17 +87,17 @@ const PerfilStack = createStackNavigator({
     navigationOptions: ({ navigation }) => ({
       title: "Perfil",
       headerLeft: (
-        <View style={{ marginLeft: 20 }}>
+        <View style={{ marginLeft: normalize(20) }}>
           <Image 
             source={require('../../assets/images/logo_laCava.png')} 
-            style={{ width: 35, height: 35 }}
+            style={{ width: normalize(35), height: normalize(35, 'height') }}
             resizeMode="contain"
           />
         </View>
       ),
       headerRight: (
-        <View style={{ marginRight: 10 }}>
-          <IconM name="cart-outline" type="material-community" size={28} />
+        <View style={{ marginRight: normalize(10) }}>
+          <IconM name="cart-outline" type="material-community" size={normalize(28)} />
         </View>
       )
     })
@@ -110,8 +110,8 @@ const RegistroStack = createStackNavigator({
     navigationOptions: ({ navigation }) => ({
       title: "Registro",
       headerLeft: (
-        <View style={{ marginLeft: 20, flexDirection: 'row', alignItems:'center' }}>
-          <IconM name={'arrow-left'} size={28} onPress={ () => navigation.navigate('Login') } />  
+        <View style={{ marginLeft: normalize(20), flexDirection: 'row', alignItems:'center' }}>
+          <IconM name={'arrow-left'} size={normalize(28)} onPress={ () => navigation.navigate('Login') } />  
         </View>
       ),
     })
@@ -157,7 +157,7 @@ const RootStack = createBottomTabNavigator({
     }
   },
   {
-    initialRouteName:'Home',
+    initialRouteName:'Productos',
     order:['Home','Buscar','Productos','Perfil'],
     tabBarOptions:{
       inactiveTintColor: "black",

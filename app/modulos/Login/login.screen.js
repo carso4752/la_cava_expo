@@ -46,7 +46,7 @@ export default class Login extends Component {
         } else if (password.length < 6){
             this.refs.toastError.show('La contraseña debe contener minimo 6 caracteres', 1000);
         } else {
-            Firebase.auth().signInWithEmailAndPassword(validacion.email, validacion.password).then(result => {
+            Firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
                 this.refs.toast.show('Login Exitoso', 500, () =>{
                     this.props.navigation.navigate('Home')
                 });
