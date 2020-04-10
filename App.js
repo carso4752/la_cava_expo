@@ -13,6 +13,7 @@ import FirebaseConfig from './app/modulos/Database/Firebase';
 import * as Firebase from 'firebase';
 import Navegacion from './app/modulos/Navegacion/Nav'
 
+console.disableYellowBox = true;
 Firebase.initializeApp(FirebaseConfig);
 export default class App extends Component {
 

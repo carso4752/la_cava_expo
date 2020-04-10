@@ -21,7 +21,7 @@ const HomeStack = createStackNavigator({
         <View style={{ marginLeft: normalize(20) }}>
           <Image 
             source={require('../../assets/images/logo_laCava.png')} 
-            style={{ width: normalize(35), height: normalize(35, 'height') }}
+            style={{ width: normalize(40), height: normalize(40, 'height') }}
             resizeMode="contain"
           />
         </View>
@@ -44,7 +44,7 @@ const BuscadorStack = createStackNavigator({
         <View style={{ marginLeft: normalize(20) }}>
           <Image 
             source={require('../../assets/images/logo_laCava.png')} 
-            style={{ width: normalize(35), height: normalize(35, 'height') }}
+            style={{ width: normalize(40), height: normalize(40, 'height') }}
             resizeMode="contain"
           />
         </View>
@@ -67,7 +67,7 @@ const ProductosStack = createStackNavigator({
         <View style={{ marginLeft: normalize(20) }}>
           <Image 
             source={require('../../assets/images/logo_laCava.png')} 
-            style={{ width: normalize(35), height: normalize(35, 'height') }}
+            style={{ width: normalize(40), height: normalize(40, 'height') }}
             resizeMode="contain"
           />
         </View>
@@ -90,7 +90,7 @@ const PerfilStack = createStackNavigator({
         <View style={{ marginLeft: normalize(20) }}>
           <Image 
             source={require('../../assets/images/logo_laCava.png')} 
-            style={{ width: normalize(35), height: normalize(35, 'height') }}
+            style={{ width: normalize(40), height: normalize(40, 'height') }}
             resizeMode="contain"
           />
         </View>
@@ -124,7 +124,7 @@ const RootStack = createBottomTabNavigator({
       navigationOptions:({ navigation }) => ({
         tabBarLabel:"Inicio",
         tabBarIcon: ({ tintColor }) => (
-          <Icon name={navigation.isFocused() ? 'human-handsup' : 'home-outline'} type={'material-community'} size={28} color={tintColor} />
+          <Icon name={navigation.isFocused() ? 'home-circle' : 'home-outline'} type={'material-community'} size={normalize(28)} color={tintColor} />
         )
       })
     },
@@ -133,7 +133,7 @@ const RootStack = createBottomTabNavigator({
       navigationOptions:({ navigation }) => ({
         tabBarLabel:"Buscar",
         tabBarIcon: ({ tintColor }) => (
-          <Icon name={navigation.isFocused() ? 'keyboard' : 'magnify'} type={'material-community'} size={28} color={tintColor} />
+          <Icon name={navigation.isFocused() ? 'keyboard' : 'magnify'} type={'material-community'} size={normalize(28)} color={tintColor} />
         )
       })
     },
@@ -142,7 +142,7 @@ const RootStack = createBottomTabNavigator({
       navigationOptions:({ navigation }) => ({
         tabBarLabel:"Productos",
         tabBarIcon: ({ tintColor }) => (
-          <Icon name={navigation.isFocused() ? 'glass-cocktail' : 'tag-outline'} type={'material-community'} size={28} color={tintColor} />
+          <Icon name={navigation.isFocused() ? 'glass-cocktail' : 'tag-text-outline'} type={'material-community'} size={normalize(28)} color={tintColor} />
         )
       })
     },
@@ -151,13 +151,13 @@ const RootStack = createBottomTabNavigator({
       navigationOptions:({ navigation }) => ({
         tabBarLabel:"Perfil",
         tabBarIcon: ({ tintColor }) => (
-          <Icon name={navigation.isFocused() ? 'account-circle' : 'account-outline'} type={'material-community'} size={28} color={tintColor} />
+          <Icon name={navigation.isFocused() ? 'human-greeting' : 'account-outline'} type={'material-community'} size={normalize(28)} color={tintColor} />
         )
       })
     }
   },
   {
-    initialRouteName:'Productos',
+    initialRouteName:'Perfil',
     order:['Home','Buscar','Productos','Perfil'],
     tabBarOptions:{
       inactiveTintColor: "black",
@@ -167,8 +167,8 @@ const RootStack = createBottomTabNavigator({
 )
 
 const AppNavigator = createSwitchNavigator({
-  Tabs: RootStack,
   Login: LoginScreen,
+  Tabs: RootStack,
   Registro: RegistroStack,
 });
 

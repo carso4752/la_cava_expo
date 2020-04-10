@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, StatusBar, Dimensions } from 'react-native';
+import { View, StyleSheet, StatusBar, Dimensions } from 'react-native';
 import { Button, Image, Input, Icon } from 'react-native-elements';
 import Colors from '../../theme/colors';
 import * as Firebase from 'firebase';
 import Toast, {DURATION} from 'react-native-easy-toast';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import normalize from 'react-native-normalize';
+import { ActivityIndicator } from 'react-native-paper'
 
 const DeviceScreen = Dimensions.get('screen')
 
@@ -66,7 +67,7 @@ export default class Registro extends Component {
                 <KeyboardAwareScrollView>
                 <View style={styles.containerLogo}>
                     <Image
-                        PlaceholderContent={<ActivityIndicator />}
+                        PlaceholderContent={<ActivityIndicator color={Colors.primaryButton} />}
                         source={require("../../assets/images/logo_laCava.png")}
                         style={styles.logo}
                         resizeMode="contain"
@@ -74,7 +75,7 @@ export default class Registro extends Component {
                 </View>
                 <Input
                     containerStyle={{ marginBottom: normalize(15, 'height') }}
-                    placeholder='Example@mail.com'
+                    placeholder='Example@email.com'
                     label='Correo Electronico'
                     value={email}
                     inputStyle={styles.input}
@@ -151,7 +152,7 @@ export default class Registro extends Component {
                     onPress={() => this._renderRegistro()} 
                 /> : 
                 <View style={{ justifyContent:'center', marginVertical: normalize(20, 'height') }}>
-                    <ActivityIndicator size="large" animating={true} color={Colors.primary} />
+                    <ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />
                 </View>}
                 </KeyboardAwareScrollView>
                 <Toast

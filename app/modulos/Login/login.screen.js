@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, ActivityIndicator, StatusBar, Text, Dimensions } from 'react-native';
+import { StyleSheet, View, StatusBar, Text, Dimensions } from 'react-native';
 import { Button, Image, Input, Icon } from 'react-native-elements';
 import Colors from '../../theme/colors';
 import * as Firebase from 'firebase';
 import Toast, {DURATION} from 'react-native-easy-toast';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import normalize from 'react-native-normalize';
+import { ActivityIndicator } from 'react-native-paper'
 
 const DeviceScreen = Dimensions.get('screen')
 
@@ -52,7 +53,7 @@ export default class Login extends Component {
             Firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
                 this.refs.toast.show('Login Exitoso', 500, () =>{
                     this.setState({ ingreso: false })
-                    this.props.navigation.navigate('Home')
+                    this.props.navigation.navigate('Tabs')
                 });
             }).catch(err => {
                 console.log("Error en el Login", err)
@@ -69,11 +70,11 @@ export default class Login extends Component {
         let toast = (DeviceScreen.height < 600 ? 90 : 130)
         if (login == null){
             return <View style={{ flex: 1, justifyContent:'center' }}>
-                <ActivityIndicator size="large" animating={true} color={Colors.primary} />
+                <ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />
             </View>
         }
         if(login){
-            this.props.navigation.navigate('Home')
+            this.props.navigation.navigate('Tabs')
         }
         return <>
             <StatusBar hidden={true} />
@@ -81,7 +82,7 @@ export default class Login extends Component {
                 <KeyboardAwareScrollView>
                 <View style={styles.containerLogo}>
                     <Image
-                        PlaceholderContent={<ActivityIndicator />}
+                        PlaceholderContent={<ActivityIndicator color={Colors.primaryButton} />}
                         source={require("../../assets/images/logo_laCava.png")}
                         style={styles.logo}
                         resizeMode="contain"
@@ -89,8 +90,8 @@ export default class Login extends Component {
                 </View>
                 <Input
                     containerStyle={{ marginBottom: normalize(15, 'height') }}
-                    placeholder='Ingrese correo electronico'
-                    label='Correo Electronico'
+                    placeholder='Ingrese correo electrónico'
+                    label='Correo Electrónico'
                     value={email}
                     inputStyle={styles.input}
                     rightIconContainerStyle={{ paddingRight: normalize(15) }}
@@ -142,7 +143,7 @@ export default class Login extends Component {
                     onPress={this._renderIngreso.bind(this)}
                 /> : 
                 <View style={{ justifyContent:'center', marginVertical: normalize(20, 'height') }}>
-                    <ActivityIndicator size="large" animating={true} color={Colors.primary} />
+                    <ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />
                 </View>}
                 <Text style={{ color: Colors.primaryText, alignSelf: 'center' }}>
                     ¿Aún no tienes una cuenta?
