@@ -10,6 +10,7 @@ import BuscadorScreen from '../Buscador/buscador.screen';
 import PerfilScreen from '../Perfil/perfil.screen';
 import RegistroScreen from '../Registro/registro.screen';
 import LoginScreen from '../Login/login.screen';
+import AgregarItemScreen from '../Productos/agregarItem.screen';
 import { View } from 'react-native';
 
 const HomeStack = createStackNavigator({
@@ -118,6 +119,20 @@ const RegistroStack = createStackNavigator({
   }
 });
 
+const AgregarItemStack = createStackNavigator({
+  Item: {
+    screen: AgregarItemScreen,
+    navigationOptions: ({ navigation }) => ({
+      title: "Agregar Producto",
+      headerLeft: (
+        <View style={{ marginLeft: normalize(20), flexDirection: 'row', alignItems:'center' }}>
+          <IconM name={'arrow-left'} size={normalize(28)} onPress={ () => navigation.navigate('Productos') } />  
+        </View>
+      ),
+    })
+  }
+});
+
 const RootStack = createBottomTabNavigator({
     Home:{
       screen: HomeStack,
@@ -157,7 +172,7 @@ const RootStack = createBottomTabNavigator({
     }
   },
   {
-    initialRouteName:'Perfil',
+    initialRouteName:'Productos',
     order:['Home','Buscar','Productos','Perfil'],
     tabBarOptions:{
       inactiveTintColor: "black",
@@ -170,6 +185,7 @@ const AppNavigator = createSwitchNavigator({
   Login: LoginScreen,
   Tabs: RootStack,
   Registro: RegistroStack,
+  Item: AgregarItemStack
 });
 
 export default createAppContainer(AppNavigator)

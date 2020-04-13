@@ -1,128 +1,190 @@
 import React, { Component } from 'react';
-import { Image, Icon, Button, colors } from 'react-native-elements'
+import { Image, Icon, Button } from 'react-native-elements'
 import normalize from 'react-native-normalize';
-import { View, Text, StyleSheet, ScrollView, Dimensions, Modal, Platform, ImageBackground } from 'react-native';
-import TouchableNative from '../shared/touchableNative'
-import Colors from '../../theme/colors'
+import { View, Text, StyleSheet, ScrollView, Dimensions, Modal, Platform, FlatList } from 'react-native';
+import TouchableNative from '../shared/touchableNative';
+import Colors from '../../theme/colors';
+import { ActivityIndicator } from 'react-native-paper'
+
+import { firebaseApp } from '../Database/Firebase'
+import * as firebase from 'firebase';
+import 'firebase/firestore'
 
 const DeviceScreen = Dimensions.get('screen')
 const desface = DeviceScreen.width > 320 ? true : false
+const url_default = 'https://firebasestorage.googleapis.com/v0/b/lacava-a1dab.appspot.com/o/productos%2Fsin_imagen.jpeg?alt=media&token=c0205d4c-1ce8-4681-a3a1-e7bc4b08a4e8'
+const limite = 6
 
-const product = [{
-    precio: "10000",
-    nombre: "Cerveza1"
-},{
-    precio: "20000",
-    nombre: "Cerveza2"
-},{
-    precio: "30000",
-    nombre: "Cerveza3"
-},{
-    precio: "40000",
-    nombre: "Cerveza4"
-},{
-    precio: "50000",
-    nombre: "Cerveza5"
-},{
-    precio: "60000",
-    nombre: "Cerveza6"
-},{
-    precio: "70000",
-    nombre: "Cerveza7"
-},{
-    precio: "80000",
-    nombre: "Cerveza8"
-}]
-
-export default class productos extends Component {
+export default class Productos extends Component {
     
     constructor(){
         super();
         this.state={
+            productos: [],
+            startProductos: null,
+            cargando: false,
+            totalProductos: 0,
             modalVisible: false,
             selectProd: [],
-            cantidad: 1
+            cantidad: 1,
         }
-
     }
 
-    renderModal(){
+    async componentDidMount(){
+        const db = firebase.firestore(firebaseApp);
+        db.collection('tbl_productos').get().then(result =>{
+            console.log("totalProductos:", result.size)
+            this.setState({ totalProductos: result.size })
+        });
+        await this.cargarProductos();
+    }
+    
+    renderModal = () => {
         const { modalVisible, cantidad } = this.state
-        const { precio, nombre } = this.state.selectProd
-        let costo = (precio*cantidad).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+        const { prod_costo, prod_nombre, prod_url, prod_estado } = this.state.selectProd
+        let costo = (prod_costo * cantidad).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
         return <Modal
             animationType="slide"
             transparent={true}
             visible={modalVisible}
             onRequestClose={() => {
                 this.setState({ modalVisible: !modalVisible})
-        }}>
-            <ImageBackground style={{ width: '100%', height: '100%'}} resizeMode='cover' source={require('../../../assets/splash.png')}> 
-                <View style={styles.containerModal}>
-                    <View style={styles.modal}>
-                        {Platform.OS === "ios" && <Icon type='material-community' name='close' color={Colors.Menu} size={normalize(25)} />}
-                        <View style={{ alignItems:'center', marginBottom: normalize(15, 'height') }}>
-                            <Image style={styles.imageModal} resizeMode='stretch' source={require('../../assets/productos/AGUARDIENTE-ANT-BOTELLA-SIN-AZUCAR.png')} /> 
-                            <Text style={{ fontSize: normalize(16), marginTop: normalize(5, 'height')}}>{nombre}</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row' , justifyContent: 'space-around', marginVertical: normalize(15, 'height') }}>
-                            <View style={{ flexDirection: 'row', alignItems:'center', paddingBottom: normalize(2, 'height'), borderWidth: 0.3, borderRadius: normalize(5) }}>
-                                <Icon reverse  name='minus' type='material-community' color={Colors.accent} size={normalize(12)} onPress={()=>{
-                                    let restar = cantidad == 1 ? 1 : cantidad - 1 
-                                    this.setState({ cantidad: restar })
-                                }} />
-                                <Text style={styles.textCantidad}>{cantidad}</Text>
-                                <Icon reverse name='plus' type='material-community' color={Colors.primaryButton} size={normalize(12)} onPress={()=>{
-                                    this.setState({ cantidad: cantidad + 1 })
-                                }}/>
-                            </View>
-                            <Button title={"Agregar $"+costo} buttonStyle={{ backgroundColor: Colors.Menu }}/>
-                        </View>
+            }}>
+            <View style={styles.containerModal}>
+                <View style={styles.modal}>
+                    {Platform.OS === "ios" && <View style={{ alignItems:'flex-end', paddingRight: normalize(20) }}>
+                        <Icon type='material-community' name='close-box-outline' color={Colors.Menu} size={normalize(30)} onPress={() => {
+                            this.setState({ modalVisible: !modalVisible})
+                        }} />
+                    </View>}
+                    <View style={{ alignItems:'center', marginBottom: normalize(15, 'height') }}>
+                        <Image placeholderStyle={{ backgroundColor: 'white' }} style={styles.imageModal} resizeMode='stretch' source={{ uri: prod_url }} PlaceholderContent={<ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />} /> 
+                        <Text style={{ fontSize: normalize(16), marginTop: normalize(5, 'height')}}>{prod_nombre}</Text>
                     </View>
+                    {prod_estado == true && <View style={{ flexDirection: 'row' , justifyContent: 'space-around', marginVertical: normalize(15, 'height') }}>
+                        <View style={styles.cantidad}>
+                            <Icon reverse  name='minus' type='material-community' color={Colors.accent} size={normalize(12)} onPress={()=>{
+                                let restar = cantidad == 1 ? 1 : cantidad - 1 
+                                this.setState({ cantidad: restar })
+                            }} />
+                            <Text style={styles.textCantidad}>{cantidad}</Text>
+                            <Icon reverse name='plus' type='material-community' color={Colors.primaryButton} size={normalize(12)} onPress={()=>{
+                                this.setState({ cantidad: cantidad + 1 })
+                            }}/>
+                        </View>
+                        <Button title={"Agregar $" + costo} buttonStyle={{ backgroundColor: Colors.Menu }}/>
+                    </View>}
                 </View>
-            </ImageBackground>
+            </View>
         </Modal>
     }
 
-    render() {
+    renderProductos = ({item, index}) => {
         const { modalVisible } = this.state
-        return <ScrollView>
-            {this.renderModal()}
-            <View style={styles.container}>
-                {product.map((item, index)=>{
-                    let costo = (item.precio).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-                    return <View key={"filtro_"+ index} style={styles.producto}>
-                        <Image placeholder='Hola' containerStyle={{ borderWidth: 0.2, borderRadius: normalize(5)}} style={styles.imageProduct} resizeMode='contain' source={require('../../assets/productos/AGUARDIENTE-ANT-BOTELLA-SIN-AZUCAR.png')} /> 
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
-                            <View style={{ flexGrow: 2 }}>
-                                <Text style={{ fontSize: normalize(16) }}>{item.nombre}</Text>
-                                <Text style={{ fontSize: normalize(12) }}>$ {costo}</Text>
-                            </View>
-                            <View style={{ flexGrow: 1 }}>
-                                <Icon type='material-community' name='plus-circle' color={Colors.Menu} size={normalize(25)} onPress={()=>{
-                                    this.setState({ modalVisible: !modalVisible, selectProd: item })
-                                }} />
-                            </View>
-                        </View>
+        let costo = (item.prod_costo).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+        return <TouchableNative onPress={()=>{
+                this.setState({ modalVisible: !modalVisible, selectProd: item })
+            }}>
+            <View style={styles.producto}>
+                <Image placeholderStyle={{ backgroundColor: 'white' }} style={styles.imageProduct} resizeMode='contain' source={{ uri: item.prod_url }} PlaceholderContent={<ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />} /> 
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
+                    <View style={{ flexGrow: 2 }}>
+                        <Text ellipsizeMode={'tail'} numberOfLines={2} style={{ fontSize: normalize(16), paddingLeft: normalize(8) }}>{item.prod_nombre}</Text>
+                        <Text ellipsizeMode={'tail'} numberOfLines={1} style={{ fontSize: normalize(14), paddingLeft: normalize(8) }}>${costo}</Text>
                     </View>
-                })}
+                </View>
             </View>
-        </ScrollView>
+        </TouchableNative>
+    }
+
+    cargarProductos = async() => {
+        let resultProductos = []
+        const db = firebase.firestore(firebaseApp);
+        const items = db.collection("tbl_productos").orderBy("prod_nombre", "asc").limit(12);
+
+        await items.get().then(result =>{
+            result.forEach(async element => {
+                let data = element.data();
+                let uid = data.prod_estado == true ? data.prod_imagen : data.prod_imagen_agotado;
+                await firebase.storage().ref(`productos/${uid}.png`).getDownloadURL().then(result => {
+                    data.prod_url = result
+                }).catch((err)=>{
+                    data.prod_url = url_default
+                });
+                resultProductos.push(data);
+                if(resultProductos.length == result.size){
+                    this.setState({ productos: resultProductos, startProductos: data })
+                }
+            });
+        });
+    }
+
+    agregarProductos = async() => {
+        const { productos, startProductos, totalProductos, cargando } = this.state
+        productos.length < totalProductos && this.setState({ cargando: !cargando })
+        let resultProductos = productos
+        const db = firebase.firestore(firebaseApp);
+        const items = db.collection("tbl_productos").where("prod_nombre", ">", startProductos.prod_nombre).orderBy("prod_nombre", "asc").limit(limite);
+        
+        await items.get().then(result =>{
+            let resultCargados = result.size + productos.length
+            result.forEach(async element => {
+                let data = element.data();
+                let uid = data.prod_estado == true ? data.prod_imagen : data.prod_imagen_agotado;
+                await firebase.storage().ref(`productos/${uid}.png`).getDownloadURL().then(result => {
+                    data.prod_url = result
+                }).catch((err)=>{
+                    data.prod_url = url_default
+                });
+                resultProductos.push(data);
+
+                if(resultProductos.length == resultCargados){                    
+                    this.setState({ productos: resultProductos, startProductos: data, cargando: !cargando })
+                }
+            });
+        });
+    }
+
+    renderFooter = () =>{
+        const { cargando, totalProductos, productos } = this.state
+        let mensaje = (totalProductos == productos.length) ? 'No quedan productos por cargar' : '';
+        if(cargando){
+            return <View style={{ marginVertical: normalize(10, 'height'), alignItems:'center' }}>
+                <ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />
+            </View>
+        } else {
+            return <Text>{mensaje}</Text>
+        }
+    }
+
+    render() {
+        const { productos } = this.state
+        if(productos.length < limite ){
+            return <View style={{ flex: 1, justifyContent:'center' }}>
+                <ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />
+            </View>
+        }
+        return <>
+            {this.renderModal()}
+            <FlatList
+                data={productos}
+                numColumns={3}
+                renderItem={this.renderProductos}
+                keyExtractor={(item, index) => index.toString()}
+                onEndReached={this.agregarProductos}
+                onEndReachedThreshold={1}
+                ListFooterComponent={this.renderFooter}
+            />
+        </>
     }
 }
 
 const styles = StyleSheet.create({
-    container:{
-        flexDirection:'row', 
-        marginVertical: normalize(5, 'height'), 
-        flexWrap: 'wrap', 
-        flexShrink: 1,
-    },
     producto:{
         marginVertical: normalize(10, 'height'),
         width: DeviceScreen.width/3.1,
         paddingLeft: normalize(desface ? 9 : 4),
-        marginLeft: normalize(desface ? 5 : 3),
+        marginLeft: normalize(desface ? 5 : 2),
     },
     imageProduct:{
         width: normalize(110),
@@ -134,7 +196,8 @@ const styles = StyleSheet.create({
     },
     containerModal:{
         flex: 1, 
-        justifyContent:'flex-end', 
+        justifyContent:'flex-end',
+        backgroundColor: 'rgba(218,218,218, 0.8)'
     },
     modal:{
         backgroundColor: 'rgba(255,255,255, 0.9)', 
@@ -147,5 +210,12 @@ const styles = StyleSheet.create({
         fontSize: normalize(25),
         fontWeight: 'bold',
         marginHorizontal: normalize(20),
+    },
+    cantidad:{
+        borderWidth: 1,
+        flexDirection: 'row', 
+        alignItems:'center', 
+        paddingBottom: normalize(2, 'height'), 
+        borderRadius: normalize(5) 
     }
 })

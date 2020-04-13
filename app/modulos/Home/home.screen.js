@@ -34,7 +34,11 @@ export default class home extends Component {
         let ancho = (DeviceWidth / 2) - normalize(10)
         return <View style={styles.container}>
             <ScrollView>
-                <SliderBox sliderBoxHeight={normalize(170, 'height')} images={this.state.images} />
+                <SliderBox
+                    circleLoop
+                    sliderBoxHeight={normalize(170, 'height')} 
+                    images={this.state.images}
+                />
                 <View style={{ paddingHorizontal: normalize(15), marginVertical: normalize(15, 'height') }}>
                     <Text style={{ fontSize: normalize(20), color:'white', borderBottomWidth: normalize(2, 'height'), borderColor: '#ccc' }}>Categorías</Text>
                 </View>
