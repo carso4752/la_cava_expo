@@ -4,10 +4,10 @@ import { Text, Image } from  'react-native-elements';
 import { SliderBox } from 'react-native-image-slider-box';
 import normalize from 'react-native-normalize';
 import * as firebase from 'firebase';
-import TouchableNative from '../shared/touchableNative'
+import TouchableNative from '../shared/touchableNative';
+import Colors from '../../theme/colors';
 
 const DeviceWidth = Dimensions.get('screen').width
-const banner = ['banner_1.png','banner_2.png','banner_3.png']
 
 export default class home extends Component {
 
@@ -20,24 +20,33 @@ export default class home extends Component {
     }
 
     componentDidMount(){
+        firebase.storage().ref('banner').list().then(result =>{
+            result.items.forEach(ref => {
+                this.cargarImagenes(ref.fullPath)
+            });
+        })
+    }
+
+    cargarImagenes = (ref) =>{
         const { images } = this.state
         let data = images
-        banner.map(async(value) => {
-            await firebase.storage().ref(`banner/`+ value).getDownloadURL().then(url =>{
-                data.push(url)
-            })
+        firebase.storage().ref(`${ref}`).getDownloadURL().then(url =>{
+            console.log("url", url)
+            data.push(url)
             this.setState({ images: data })
         })
     }
 
     render(){
+        const { images } = this.state
         let ancho = (DeviceWidth / 2) - normalize(10)
         return <View style={styles.container}>
             <ScrollView>
                 <SliderBox
                     circleLoop
                     sliderBoxHeight={normalize(170, 'height')} 
-                    images={this.state.images}
+                    images={images}
+                    dotColor={Colors.primary}
                 />
                 <View style={{ paddingHorizontal: normalize(15), marginVertical: normalize(15, 'height') }}>
                     <Text style={{ fontSize: normalize(20), color:'white', borderBottomWidth: normalize(2, 'height'), borderColor: '#ccc' }}>Categorías</Text>

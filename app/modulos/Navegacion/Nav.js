@@ -172,7 +172,7 @@ const RootStack = createBottomTabNavigator({
     }
   },
   {
-    initialRouteName:'Productos',
+    initialRouteName:'Buscar',
     order:['Home','Buscar','Productos','Perfil'],
     tabBarOptions:{
       inactiveTintColor: "black",

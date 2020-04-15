@@ -12,8 +12,8 @@ import 'firebase/firestore'
 
 const DeviceScreen = Dimensions.get('screen')
 const desface = DeviceScreen.width > 320 ? true : false
-const url_default = 'https://firebasestorage.googleapis.com/v0/b/lacava-a1dab.appspot.com/o/productos%2Fsin_imagen.jpeg?alt=media&token=c0205d4c-1ce8-4681-a3a1-e7bc4b08a4e8'
-const limite = 18
+const url_default = 'https://firebasestorage.googleapis.com/v0/b/lacava-a1dab.appspot.com/o/productos%2Fsin_imagen.jpg?alt=media&token=45b98d82-76c2-44a1-a8b4-911acc895e56'
+const limite = 12
 
 export default class Productos extends Component {
     
@@ -89,7 +89,6 @@ export default class Productos extends Component {
             this.updateData(id, item)
 
         }).catch((err)=>{
-            console.log("err",err)
             let { productos } = this.state
             productos[index].prod_url = url_default
             productos[index].prod_url_agotado = url_default
@@ -161,7 +160,7 @@ export default class Productos extends Component {
         let resultProductos = productos
         
         const db = firebase.firestore(firebaseApp);
-        const items = db.collection("tbl_productos").where("prod_nombre", ">", startProductos.prod_nombre).orderBy("prod_nombre", "asc").limit(limite);
+        const items = db.collection("tbl_productos").orderBy("prod_nombre", "asc").startAfter(startProductos.prod_nombre).limit(limite);
         
         await items.get().then(result =>{
             if(result.docs.length > 0){
