@@ -26,6 +26,7 @@ export default class Productos extends Component {
             modalVisible: false,
             selectProd: [],
             cantidad: 1,
+            categoria: null
         }
     }
 
@@ -141,10 +142,12 @@ export default class Productos extends Component {
     }
 
     cargarProductos = async() => {
+        const { categoria } = this.state
         let resultProductos = []
         const db = firebase.firestore(firebaseApp);
-        const items = db.collection("tbl_productos").orderBy("prod_nombre", "asc").limit(limite);
-
+        const items = categoria ?
+            db.collection("tbl_productos").where("prod_tipo", "==", categoria).orderBy("prod_nombre", "asc").limit(limite):
+            db.collection("tbl_productos").orderBy("prod_nombre", "asc").limit(limite);
         await items.get().then(result =>{
             this.setState({ totalProductos: result.size, startProductos: result.docs[result.docs.length - 1].data() })
             
@@ -156,11 +159,13 @@ export default class Productos extends Component {
     }
 
     agregarProductos = async() => {
-        const { startProductos, productos, cargando } = this.state
+        const { startProductos, productos, cargando, categoria } = this.state
         let resultProductos = productos
         
         const db = firebase.firestore(firebaseApp);
-        const items = db.collection("tbl_productos").orderBy("prod_nombre", "asc").startAfter(startProductos.prod_nombre).limit(limite);
+        const items = categoria ?
+            db.collection("tbl_productos").where("prod_tipo", "==", categoria).orderBy("prod_nombre", "asc").startAfter(startProductos.prod_nombre).limit(limite):
+            db.collection("tbl_productos").orderBy("prod_nombre", "asc").startAfter(startProductos.prod_nombre).limit(limite);
         
         await items.get().then(result =>{
             if(result.docs.length > 0){

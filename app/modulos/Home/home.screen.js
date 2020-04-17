@@ -31,7 +31,6 @@ export default class home extends Component {
         const { images } = this.state
         let data = images
         firebase.storage().ref(`${ref}`).getDownloadURL().then(url =>{
-            console.log("url", url)
             data.push(url)
             this.setState({ images: data })
         })
@@ -53,7 +52,7 @@ export default class home extends Component {
                 </View>
                 <View style={styles.categoria}>
                     <TouchableNative onPress={()=>{
-                        this.props.navigation.navigate('Buscar', { categoria: 'AGUARDIENTE' })
+                        this.props.navigation.navigate('Productos', { categoria: '2' })
                     }}>
                     <Image
                         source={require('../../assets/categorias/AGUARDIENTE.png')}
@@ -62,7 +61,7 @@ export default class home extends Component {
                     />
                     </TouchableNative>
                     <TouchableNative onPress={()=>{
-                        this.props.navigation.navigate('Buscar', { categoria: 'CERVEZA' })
+                        this.props.navigation.navigate('Productos', { categoria: 1 })
                     }}>
                     <Image
                         source={require('../../assets/categorias/CERVEZA.png')}
@@ -73,7 +72,7 @@ export default class home extends Component {
                 </View>
                 <View style={styles.categoria}>
                     <TouchableNative onPress={()=>{
-                        this.props.navigation.navigate('Buscar', { categoria: 'RON' })
+                        this.props.navigation.navigate('Productos', { categoria: 3 })
                     }}>
                     <Image
                         source={require('../../assets/categorias/RON.png')}
@@ -82,7 +81,7 @@ export default class home extends Component {
                     />
                     </TouchableNative>
                     <TouchableNative onPress={()=>{
-                        this.props.navigation.navigate('Buscar', { categoria: 'TEQUILA' })
+                        this.props.navigation.navigate('Productos', { categoria: 5 })
                     }}>
                     <Image
                         source={require('../../assets/categorias/TEQUILA.png')}
@@ -93,7 +92,7 @@ export default class home extends Component {
                 </View>
                 <View style={styles.categoria}>
                     <TouchableNative onPress={()=>{
-                        this.props.navigation.navigate('Buscar', { categoria: 'WHISKY' })
+                        this.props.navigation.navigate('Productos', { categoria: 6 })
                     }}>
                     <Image
                         source={require('../../assets/categorias/WHISKY.png')}
@@ -102,7 +101,7 @@ export default class home extends Component {
                     />
                     </TouchableNative>
                     <TouchableNative onPress={()=>{
-                        this.props.navigation.navigate('Buscar', { categoria: 'VODKA' })
+                        this.props.navigation.navigate('Productos', { categoria: 7 })
                     }}>
                     <Image
                         source={require('../../assets/categorias/VODKA.png')}
@@ -113,7 +112,7 @@ export default class home extends Component {
                 </View>
                 <View style={styles.categoria}>
                     <TouchableNative onPress={()=>{
-                        this.props.navigation.navigate('Buscar', { categoria: 'VINO' })
+                        this.props.navigation.navigate('Productos', { categoria: 4 })
                     }}>
                     <Image
                         source={require('../../assets/categorias/VINO.png')}
@@ -122,7 +121,7 @@ export default class home extends Component {
                     />
                     </TouchableNative>
                     <TouchableNative onPress={()=>{
-                        this.props.navigation.navigate('Buscar', { categoria: 'OTROS' })
+                        this.props.navigation.navigate('Productos', { categoria: 12 })
                     }}>
                     <Image
                         source={require('../../assets/categorias/OTROS.png')}
