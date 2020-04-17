@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { Text, Image } from  'react-native-elements';
+import { Text, Image } from 'react-native-elements';
 import { SliderBox } from 'react-native-image-slider-box';
 import normalize from 'react-native-normalize';
 import * as firebase from 'firebase';
@@ -15,119 +15,119 @@ export default class home extends Component {
         super();
 
         this.state = {
-          images: []
+            images: []
         };
     }
 
-    componentDidMount(){
-        firebase.storage().ref('banner').list().then(result =>{
+    componentDidMount() {
+        firebase.storage().ref('banner').list().then(result => {
             result.items.forEach(ref => {
                 this.cargarImagenes(ref.fullPath)
             });
         })
     }
 
-    cargarImagenes = (ref) =>{
+    cargarImagenes = (ref) => {
         const { images } = this.state
         let data = images
-        firebase.storage().ref(`${ref}`).getDownloadURL().then(url =>{
+        firebase.storage().ref(`${ref}`).getDownloadURL().then(url => {
             data.push(url)
             this.setState({ images: data })
         })
     }
 
-    render(){
+    render() {
         const { images } = this.state
         let ancho = (DeviceWidth / 2) - normalize(10)
         return <View style={styles.container}>
             <ScrollView>
                 <SliderBox
                     circleLoop
-                    sliderBoxHeight={normalize(170, 'height')} 
+                    sliderBoxHeight={normalize(170, 'height')}
                     images={images}
                     dotColor={Colors.primary}
                 />
                 <View style={{ paddingHorizontal: normalize(15), marginVertical: normalize(15, 'height') }}>
-                    <Text style={{ fontSize: normalize(20), color:'white', borderBottomWidth: normalize(2, 'height'), borderColor: '#ccc' }}>Categorías</Text>
+                    <Text style={{ fontSize: normalize(20), color: 'white', borderBottomWidth: normalize(2, 'height'), borderColor: '#ccc' }}>Categorías</Text>
                 </View>
                 <View style={styles.categoria}>
-                    <TouchableNative onPress={()=>{
+                    <TouchableNative onPress={() => {
                         this.props.navigation.navigate('Productos', { categoria: '2' })
                     }}>
-                    <Image
-                        source={require('../../assets/categorias/AGUARDIENTE.png')}
-                        style={{ width: ancho, height: normalize(90, 'height') }}
-                        resizeMode='center'
-                    />
+                        <Image
+                            source={require('../../assets/categorias/AGUARDIENTE.png')}
+                            style={{ width: ancho, height: normalize(90, 'height') }}
+                            resizeMode='center'
+                        />
                     </TouchableNative>
-                    <TouchableNative onPress={()=>{
+                    <TouchableNative onPress={() => {
                         this.props.navigation.navigate('Productos', { categoria: 1 })
                     }}>
-                    <Image
-                        source={require('../../assets/categorias/CERVEZA.png')}
-                        style={{ width: ancho, height: normalize(90, 'height') }}
-                        resizeMode='center'
-                    />
+                        <Image
+                            source={require('../../assets/categorias/CERVEZA.png')}
+                            style={{ width: ancho, height: normalize(90, 'height') }}
+                            resizeMode='center'
+                        />
                     </TouchableNative>
                 </View>
                 <View style={styles.categoria}>
-                    <TouchableNative onPress={()=>{
+                    <TouchableNative onPress={() => {
                         this.props.navigation.navigate('Productos', { categoria: 3 })
                     }}>
-                    <Image
-                        source={require('../../assets/categorias/RON.png')}
-                        style={{ width: ancho, height: normalize(90, 'height') }}
-                        resizeMode='center'
-                    />
+                        <Image
+                            source={require('../../assets/categorias/RON.png')}
+                            style={{ width: ancho, height: normalize(90, 'height') }}
+                            resizeMode='center'
+                        />
                     </TouchableNative>
-                    <TouchableNative onPress={()=>{
+                    <TouchableNative onPress={() => {
                         this.props.navigation.navigate('Productos', { categoria: 5 })
                     }}>
-                    <Image
-                        source={require('../../assets/categorias/TEQUILA.png')}
-                        style={{ width: ancho, height: normalize(90, 'height') }}
-                        resizeMode='center'
-                    />
+                        <Image
+                            source={require('../../assets/categorias/TEQUILA.png')}
+                            style={{ width: ancho, height: normalize(90, 'height') }}
+                            resizeMode='center'
+                        />
                     </TouchableNative>
                 </View>
                 <View style={styles.categoria}>
-                    <TouchableNative onPress={()=>{
+                    <TouchableNative onPress={() => {
                         this.props.navigation.navigate('Productos', { categoria: 6 })
                     }}>
-                    <Image
-                        source={require('../../assets/categorias/WHISKY.png')}
-                        style={{ width: ancho, height: normalize(90, 'height') }}
-                        resizeMode='center'
-                    />
+                        <Image
+                            source={require('../../assets/categorias/WHISKY.png')}
+                            style={{ width: ancho, height: normalize(90, 'height') }}
+                            resizeMode='center'
+                        />
                     </TouchableNative>
-                    <TouchableNative onPress={()=>{
+                    <TouchableNative onPress={() => {
                         this.props.navigation.navigate('Productos', { categoria: 7 })
                     }}>
-                    <Image
-                        source={require('../../assets/categorias/VODKA.png')}
-                        style={{ width: ancho, height: normalize(90, 'height') }}
-                        resizeMode='center'
-                    />
+                        <Image
+                            source={require('../../assets/categorias/VODKA.png')}
+                            style={{ width: ancho, height: normalize(90, 'height') }}
+                            resizeMode='center'
+                        />
                     </TouchableNative>
                 </View>
                 <View style={styles.categoria}>
-                    <TouchableNative onPress={()=>{
+                    <TouchableNative onPress={() => {
                         this.props.navigation.navigate('Productos', { categoria: 4 })
                     }}>
-                    <Image
-                        source={require('../../assets/categorias/VINO.png')}
-                        style={{ width: ancho, height: normalize(90, 'height') }}
-                        resizeMode='center'
-                    />
+                        <Image
+                            source={require('../../assets/categorias/VINO.png')}
+                            style={{ width: ancho, height: normalize(90, 'height') }}
+                            resizeMode='center'
+                        />
                     </TouchableNative>
-                    <TouchableNative onPress={()=>{
+                    <TouchableNative onPress={() => {
                         this.props.navigation.navigate('Productos', { categoria: 12 })
                     }}>
-                    <Image
-                        source={require('../../assets/categorias/OTROS.png')}
-                        style={{ width: ancho, height: normalize(90, 'height') }}
-                        resizeMode='center'
-                    />
+                        <Image
+                            source={require('../../assets/categorias/OTROS.png')}
+                            style={{ width: ancho, height: normalize(90, 'height') }}
+                            resizeMode='center'
+                        />
                     </TouchableNative>
                 </View>
             </ScrollView>
@@ -136,13 +136,13 @@ export default class home extends Component {
 }
 
 const styles = StyleSheet.create({
-    container:{
+    container: {
         flex: 1,
-        backgroundColor:'#000',
+        backgroundColor: '#000',
     },
-    categoria :{
+    categoria: {
         flexDirection: 'row',
-        justifyContent:'space-around',
+        justifyContent: 'space-around',
         marginBottom: normalize(3, 'height')
     }
 })

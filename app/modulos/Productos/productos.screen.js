@@ -31,6 +31,7 @@ export default class Productos extends Component {
     }
 
     componentDidMount(){
+        console.log("params", this.props.route)
         this.cargarProductos();
     }
     

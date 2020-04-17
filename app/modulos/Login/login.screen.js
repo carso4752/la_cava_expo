@@ -53,7 +53,7 @@ export default class Login extends Component {
             Firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
                 this.refs.toast.show('Login Exitoso', 500, () =>{
                     this.setState({ ingreso: false })
-                    this.props.navigation.navigate('Tabs')
+                    this.props.navigation.navigate('App')
                 });
             }).catch(err => {
                 console.log("Error en el Login", err)
@@ -74,7 +74,7 @@ export default class Login extends Component {
             </View>
         }
         if(login){
-            this.props.navigation.navigate('Tabs')
+            this.props.navigation.navigate('App')
         }
         return <>
             <StatusBar hidden={true} />
