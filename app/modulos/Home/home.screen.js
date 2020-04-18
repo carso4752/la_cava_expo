@@ -52,7 +52,10 @@ export default class home extends Component {
                 </View>
                 <View style={styles.categoria}>
                     <TouchableNative onPress={() => {
-                        this.props.navigation.navigate('Productos', { categoria: '2' })
+                        this.props.navigation.navigate('Productos', {
+                            screen: 'Producto',
+                            params: { categoria: 2 },
+                        })
                     }}>
                         <Image
                             source={require('../../assets/categorias/AGUARDIENTE.png')}

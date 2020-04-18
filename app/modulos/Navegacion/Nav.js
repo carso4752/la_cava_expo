@@ -72,8 +72,8 @@ function BuscadorStack() {
 function ProductosStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Productos" component={ProductoScreen} options={{
-        title: "Productos",
+      <Stack.Screen name="Producto" component={ProductoScreen} options={{
+        title: "Producto",
         headerLeft: () => (
           <View style={{ marginLeft: normalize(20) }}>
             <Image
@@ -125,25 +125,25 @@ function AppTabs() {
         inactiveTintColor: "black",
         activeTintColor: Colors.primary
       }}>
-      <Tab.Screen name="Home" component={HomeStack} navigationOptions={({ navigation }) => ({
+      <Tab.Screen name="Home" component={HomeStack} options={({ navigation }) => ({
         tabBarLabel: "Inicio",
         tabBarIcon: ({ tintColor }) => (
           <Icon name={navigation.isFocused() ? 'home-circle' : 'home-outline'} type={'material-community'} size={normalize(28)} color={tintColor} />
         )
       })} />
-      <Tab.Screen name="Buscar" component={BuscadorStack} navigationOptions={({ navigation }) => ({
+      <Tab.Screen name="Buscar" component={BuscadorStack} options={({ navigation }) => ({
         tabBarLabel: "Buscar",
         tabBarIcon: ({ tintColor }) => (
           <Icon name={navigation.isFocused() ? 'glass-cocktail' : 'tag-text-outline'} type={'material-community'} size={normalize(28)} color={tintColor} />
         )
       })} />
-      <Tab.Screen name="Productos" component={ProductosStack} navigationOptions={({ navigation }) => ({
+      <Tab.Screen name="Productos" component={ProductosStack} options={({ navigation }) => ({
         tabBarLabel: "Productos",
         tabBarIcon: ({ tintColor }) => (
           <Icon name={navigation.isFocused() ? 'glass-cocktail' : 'tag-text-outline'} type={'material-community'} size={normalize(28)} color={tintColor} />
         )
       })} />
-      <Tab.Screen name="Perfil" component={PerfilStack} navigationOptions={({ navigation }) => ({
+      <Tab.Screen name="Perfil" component={PerfilStack} options={({ navigation }) => ({
         tabBarLabel: "Perfil",
         tabBarIcon: ({ tintColor }) => (
           <Icon name={navigation.isFocused() ? 'human-greeting' : 'account-outline'} type={'material-community'} size={normalize(28)} color={tintColor} />
@@ -170,7 +170,8 @@ function NavegacionAuth() {
   </Stack.Navigator>
 }
 
-function NavegacionTabs() {
+function NavegacionTabs({ route, navigation }) {
+  // console.log(route, navigation)
   return <Stack.Navigator initialRouteName="Tabs" screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Tabs" component={AppTabs} />
     <Stack.Screen name="Item" component={AgregarItemScreen} options={({ navigation }) => ({

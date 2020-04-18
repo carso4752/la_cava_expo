@@ -21,7 +21,7 @@ export default class App extends Component {
 
   render() {
     return <View style={styles.container}>
-      <StatusBar backgroundColor="#000" barStyle='light-content' />
+      <StatusBar backgroundColor="#fff" barStyle='dark-content' />
       <NavigationContainer>
         <NavegacionAuth />
       </NavigationContainer>
