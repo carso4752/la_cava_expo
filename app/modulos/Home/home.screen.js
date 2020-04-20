@@ -6,6 +6,7 @@ import normalize from 'react-native-normalize';
 import * as firebase from 'firebase';
 import TouchableNative from '../shared/touchableNative';
 import Colors from '../../theme/colors';
+import { ActivityIndicator } from 'react-native-paper';
 
 const DeviceWidth = Dimensions.get('screen').width
 
@@ -15,7 +16,7 @@ export default class home extends Component {
         super();
 
         this.state = {
-            images: []
+            banners: []
         };
     }
 
@@ -28,23 +29,28 @@ export default class home extends Component {
     }
 
     cargarImagenes = (ref) => {
-        const { images } = this.state
-        let data = images
+        const { banners } = this.state
+        let data = banners
         firebase.storage().ref(`${ref}`).getDownloadURL().then(url => {
             data.push(url)
-            this.setState({ images: data })
+            this.setState({ banners: data })
         })
     }
 
     render() {
-        const { images } = this.state
+        const { banners } = this.state
         let ancho = (DeviceWidth / 2) - normalize(10)
+        if(banners.length == 0){
+            return <View style={{ flex: 1, justifyContent:'center' }}>
+                <ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />
+            </View>
+        }
         return <View style={styles.container}>
             <ScrollView>
                 <SliderBox
                     circleLoop
                     sliderBoxHeight={normalize(170, 'height')}
-                    images={images}
+                    images={banners}
                     dotColor={Colors.primary}
                 />
                 <View style={{ paddingHorizontal: normalize(15), marginVertical: normalize(15, 'height') }}>
@@ -64,7 +70,10 @@ export default class home extends Component {
                         />
                     </TouchableNative>
                     <TouchableNative onPress={() => {
-                        this.props.navigation.navigate('Productos', { categoria: 1 })
+                        this.props.navigation.navigate('Productos', {
+                            screen: 'Producto',
+                            params: { categoria: 1 },
+                        })
                     }}>
                         <Image
                             source={require('../../assets/categorias/CERVEZA.png')}
@@ -75,7 +84,10 @@ export default class home extends Component {
                 </View>
                 <View style={styles.categoria}>
                     <TouchableNative onPress={() => {
-                        this.props.navigation.navigate('Productos', { categoria: 3 })
+                        this.props.navigation.navigate('Productos', {
+                            screen: 'Producto',
+                            params: { categoria: 3 },
+                        })
                     }}>
                         <Image
                             source={require('../../assets/categorias/RON.png')}
@@ -84,7 +96,10 @@ export default class home extends Component {
                         />
                     </TouchableNative>
                     <TouchableNative onPress={() => {
-                        this.props.navigation.navigate('Productos', { categoria: 5 })
+                        this.props.navigation.navigate('Productos', {
+                            screen: 'Producto',
+                            params: { categoria: 5 },
+                        })
                     }}>
                         <Image
                             source={require('../../assets/categorias/TEQUILA.png')}
@@ -95,7 +110,10 @@ export default class home extends Component {
                 </View>
                 <View style={styles.categoria}>
                     <TouchableNative onPress={() => {
-                        this.props.navigation.navigate('Productos', { categoria: 6 })
+                        this.props.navigation.navigate('Productos', {
+                            screen: 'Producto',
+                            params: { categoria: 6 },
+                        })
                     }}>
                         <Image
                             source={require('../../assets/categorias/WHISKY.png')}
@@ -104,7 +122,10 @@ export default class home extends Component {
                         />
                     </TouchableNative>
                     <TouchableNative onPress={() => {
-                        this.props.navigation.navigate('Productos', { categoria: 7 })
+                        this.props.navigation.navigate('Productos', {
+                            screen: 'Producto',
+                            params: { categoria: 7 },
+                        })
                     }}>
                         <Image
                             source={require('../../assets/categorias/VODKA.png')}
@@ -115,7 +136,10 @@ export default class home extends Component {
                 </View>
                 <View style={styles.categoria}>
                     <TouchableNative onPress={() => {
-                        this.props.navigation.navigate('Productos', { categoria: 4 })
+                        this.props.navigation.navigate('Productos', {
+                            screen: 'Producto',
+                            params: { categoria: 4 },
+                        })
                     }}>
                         <Image
                             source={require('../../assets/categorias/VINO.png')}
@@ -124,7 +148,10 @@ export default class home extends Component {
                         />
                     </TouchableNative>
                     <TouchableNative onPress={() => {
-                        this.props.navigation.navigate('Productos', { categoria: 12 })
+                        this.props.navigation.navigate('Productos', {
+                            screen: 'Producto',
+                            params: { categoria: 12 },
+                        })
                     }}>
                         <Image
                             source={require('../../assets/categorias/OTROS.png')}

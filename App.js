@@ -8,7 +8,6 @@
 
 import React, { Component } from 'react';
 import { StyleSheet, View, StatusBar } from 'react-native';
-import Colors from './app/theme/colors';
 import FirebaseConfig from './app/modulos/Database/Firebase';
 import * as Firebase from 'firebase';
 import { NavegacionAuth } from './app/modulos/Navegacion/Nav'

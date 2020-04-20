@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Image, Icon, Button } from 'react-native-elements'
 import normalize from 'react-native-normalize';
-import { View, Text, StyleSheet, Alert, Dimensions, Modal, Platform, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Alert, Dimensions, Modal, Platform, FlatList, RefreshControl } from 'react-native';
 import TouchableNative from '../shared/touchableNative';
 import Colors from '../../theme/colors';
-import { ActivityIndicator } from 'react-native-paper'
+import { ActivityIndicator } from 'react-native-paper';
 
 import { firebaseApp } from '../Database/Firebase'
 import * as firebase from 'firebase';
@@ -13,7 +13,8 @@ import 'firebase/firestore'
 const DeviceScreen = Dimensions.get('screen')
 const desface = DeviceScreen.width > 320 ? true : false
 const url_default = 'https://firebasestorage.googleapis.com/v0/b/lacava-a1dab.appspot.com/o/productos%2Fsin_imagen.jpg?alt=media&token=45b98d82-76c2-44a1-a8b4-911acc895e56'
-const limite = 12
+const limite = 15
+var db = null
 
 export default class Productos extends Component {
     
@@ -26,12 +27,18 @@ export default class Productos extends Component {
             modalVisible: false,
             selectProd: [],
             cantidad: 1,
-            categoria: null
+            categoria: null,
+            refreshing: false
         }
     }
 
-    componentDidMount(){
-        console.log("params", this.props.route.params?.categoria)
+    async componentDidMount(){
+        const { params } = this.props.route
+        console.log("params", params)
+        if(params && params.categoria){
+            await this.setState({ categoria: params.categoria })
+        }
+        db = firebase.firestore(firebaseApp);
         this.cargarProductos();
     }
     
@@ -49,13 +56,13 @@ export default class Productos extends Component {
             <View style={styles.containerModal}>
                 <View style={styles.modal}>
                     {Platform.OS === "ios" && <View style={{ alignItems:'flex-end', paddingRight: normalize(20) }}>
-                        <Icon type='material-community' name='close-box-outline' color={Colors.Menu} size={normalize(30)} onPress={() => {
+                        <Icon type='material-community' name='chevron-down' color={Colors.Menu} size={normalize(30)} onPress={() => {
                             this.setState({ modalVisible: !modalVisible})
                         }} />
                     </View>}
                     <View style={{ alignItems:'center', marginBottom: normalize(15, 'height') }}>
                         <Image placeholderStyle={{ backgroundColor: 'white' }} style={styles.imageModal} resizeMode='stretch' source={{ uri: prod_url }} PlaceholderContent={<ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />} /> 
-                        <Text style={{ fontSize: normalize(16), marginTop: normalize(5, 'height')}}>{prod_nombre}</Text>
+                        <Text style={{ fontSize: normalize(15), textAlign:'center', marginHorizontal: normalize(25), marginTop: normalize(5, 'height')}}>{prod_nombre}</Text>
                     </View>
                     <View style={{ flexDirection: 'row' , justifyContent: 'space-around', marginVertical: normalize(15, 'height') }}>
                         <View style={styles.cantidad}>
@@ -68,7 +75,10 @@ export default class Productos extends Component {
                                 this.setState({ cantidad: cantidad + 1 })
                             }}/>
                         </View>
-                        <Button title={"Agregar $" + costo} buttonStyle={{ backgroundColor: Colors.Menu }}/>
+                        <Button title={"Agregar $" + costo} buttonStyle={{ backgroundColor: Colors.Menu }} onPress={()=>{
+                            this.agregarCarrito(selectProd, cantidad)
+                            this.setState({ modalVisible: !modalVisible, cantidad: 1 })
+                        }}/>
                     </View>
                 </View>
             </View>
@@ -89,16 +99,15 @@ export default class Productos extends Component {
                 item.prod_url_agotado = result;
             }
             this.updateData(id, item)
-
+     
         }).catch((err)=>{
             let { productos } = this.state
-            productos[index].prod_url = url_default
-            productos[index].prod_url_agotado = url_default
+            console.log("err", err)
+            console.log("uid", uid + productos[index].prod_nombre)
         });
     }
 
     updateData = (id, item) =>{
-        const db = firebase.firestore(firebaseApp);
         db.doc(`tbl_productos/${id}`).set(item).then(()=>{
             console.log("Actualización correcta", id)
         }).catch((err)=>{
@@ -109,12 +118,17 @@ export default class Productos extends Component {
     renderProductos = ({item, index}) => {
         try {
             const { modalVisible } = this.state
+            let url_producto = url_default
             if (item.prod_estado){
-                if(!item.prod_url){
+                if(item.prod_url){
+                    url_producto = item.prod_url;
+                } else {
                     this.urlImagen(item.prod_imagen, index)
                 }
             } else {
-                if(!item.prod_url_agotado){
+                if(item.prod_url_agotado){
+                    url_producto = item.prod_url_agotado;
+                } else {
                     this.urlImagen(item.prod_imagen_agotado, index)
                 }
             }
@@ -127,13 +141,9 @@ export default class Productos extends Component {
                     }
                 }}>
                 <View style={styles.pintarProduct}>
-                    <Image placeholderStyle={{ backgroundColor: 'white' }} style={styles.imageProduct} resizeMode='contain' source={{ uri: item.prod_estado == true ? item.prod_url : item.prod_url_agotado }} PlaceholderContent={<ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />} /> 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
-                        <View style={{ flexGrow: 2 }}>
-                            <Text ellipsizeMode={'tail'} numberOfLines={2} style={{ fontSize: normalize(16), paddingLeft: normalize(8) }}>{item.prod_nombre}</Text>
-                            <Text ellipsizeMode={'tail'} numberOfLines={1} style={{ fontSize: normalize(14), paddingLeft: normalize(8) }}>${costo}</Text>
-                        </View>
-                    </View>
+                    <Image placeholderStyle={{ backgroundColor: 'white' }} style={styles.imageProduct} resizeMode='contain' source={{ uri: url_producto }} PlaceholderContent={<ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />} /> 
+                    <Text ellipsizeMode={'tail'} numberOfLines={2} style={{ fontSize: normalize(12), paddingLeft: normalize(8) }}>{item.prod_nombre}</Text>
+                    <Text ellipsizeMode={'tail'} numberOfLines={1} style={{ fontSize: normalize(13), paddingLeft: normalize(8) }}>${costo}</Text>
                 </View>
             </TouchableNative>
         } catch (error) {
@@ -143,14 +153,18 @@ export default class Productos extends Component {
     }
 
     cargarProductos = async() => {
-        const { categoria } = this.state
+        const { categoria, cargando } = this.state
         let resultProductos = []
-        const db = firebase.firestore(firebaseApp);
+
         const items = categoria ?
             db.collection("tbl_productos").where("prod_tipo", "==", categoria).orderBy("prod_nombre", "asc").limit(limite):
             db.collection("tbl_productos").orderBy("prod_nombre", "asc").limit(limite);
         await items.get().then(result =>{
-            this.setState({ totalProductos: result.size, startProductos: result.docs[result.docs.length - 1].data() })
+            if(result.docs.length == limite){
+                this.setState({ startProductos: result.docs[result.docs.length - 1].data() })
+            } else {
+                this.setState({ cargando: !cargando })
+            }
             
             result.forEach(element => {
                 resultProductos.push(element.data());
@@ -163,7 +177,6 @@ export default class Productos extends Component {
         const { startProductos, productos, cargando, categoria } = this.state
         let resultProductos = productos
         
-        const db = firebase.firestore(firebaseApp);
         const items = categoria ?
             db.collection("tbl_productos").where("prod_tipo", "==", categoria).orderBy("prod_nombre", "asc").startAfter(startProductos.prod_nombre).limit(limite):
             db.collection("tbl_productos").orderBy("prod_nombre", "asc").startAfter(startProductos.prod_nombre).limit(limite);
@@ -189,14 +202,44 @@ export default class Productos extends Component {
         </View>
     }
 
+    agregarCarrito = async(item, cantidad) =>{
+        let data = await getShop();
+        let encontro = data.find(e => e.prod_imagen == item.prod_imagen)
+        if(encontro){
+            let index = data.findIndex(e => e.prod_imagen == item.prod_imagen)
+            encontro.prod_cantidad = encontro.prod_cantidad + cantidad
+            data[index] = encontro
+        } else {
+            item.prod_cantidad = cantidad
+            data.push(item)
+        }
+        await setShop(data);
+    }
+
+    refreshProductos = async() =>{
+        const { refreshing } = this.state
+        this.setState({ refreshing: !refreshing });
+        let resultProductos = []
+
+        const items = db.collection("tbl_productos").orderBy("prod_nombre", "asc").limit(limite);
+        await items.get().then(result =>{
+            this.setState({ startProductos: result.docs[result.docs.length - 1].data() })
+            
+            result.forEach(element => {
+                resultProductos.push(element.data());
+            });
+            this.setState({ productos: resultProductos, refreshing: refreshing, cargando: true })
+        });
+    }
+
     render() {
-        const { productos } = this.state
-        if(!productos){
+        const { productos, refreshing } = this.state
+        if(!productos || refreshing){
             return <View style={{ flex: 1, justifyContent:'center' }}>
                 <ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />
             </View>
         }
-        return <>
+        return <View style={styles.container}>
             {this.renderModal()}
             <FlatList
                 data={productos}
@@ -204,10 +247,12 @@ export default class Productos extends Component {
                 renderItem={this.renderProductos}
                 keyExtractor={(item, index) => index.toString()}
                 onEndReached={this.agregarProductos}
-                onEndReachedThreshold={0.5}
+                onEndReachedThreshold={0.3}
                 ListFooterComponent={this.renderFooter}
+                refreshing={refreshing}
+                onRefresh={this.refreshProductos}
             />
-        </>
+        </View>
     }
 }
 
@@ -215,8 +260,7 @@ const styles = StyleSheet.create({
     pintarProduct:{
         marginVertical: normalize(10, 'height'),
         width: DeviceScreen.width/3.1,
-        paddingLeft: normalize(desface ? 9 : 4),
-        marginLeft: normalize(desface ? 5 : 2),
+        paddingHorizontal: normalize(desface ? 9 : 4),
     },
     imageProduct:{
         width: normalize(110),
@@ -225,6 +269,10 @@ const styles = StyleSheet.create({
     imageModal:{
         width: normalize(160),
         height: normalize(130, 'height')
+    },
+    container:{
+        flex: 1, 
+        backgroundColor: '#FFF'
     },
     containerModal:{
         flex: 1, 
