@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, Alert, Dimensions, Modal, Platform, FlatList, R
 import TouchableNative from '../shared/touchableNative';
 import Colors from '../../theme/colors';
 import { ActivityIndicator } from 'react-native-paper';
+import { getShop, setShop } from '../Shop/shop.utils'
 
 import { firebaseApp } from '../Database/Firebase'
 import * as firebase from 'firebase';
@@ -34,13 +35,11 @@ export default class Productos extends Component {
 
     async componentDidMount() {
         const { params } = this.props.route
-        console.log("params", params)
         if (params && params.categoria) {
             await this.setState({ categoria: params.categoria })
         }
         const unsubscribe = this.props.navigation.addListener('focus', async () => {
             const { params } = this.props.route
-            console.log("params", params)
             if (params && params.categoria) {
                 await this.setState({ categoria: params.categoria, productos:null })
             }
@@ -52,7 +51,7 @@ export default class Productos extends Component {
     }
 
     renderModal = () => {
-        const { modalVisible, cantidad } = this.state
+        const { modalVisible, cantidad, selectProd } = this.state
         const { prod_costo, prod_nombre, prod_url } = this.state.selectProd
         let costo = (prod_costo * cantidad).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
         return <Modal

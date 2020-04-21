@@ -15,14 +15,18 @@ import ShopScreen from '../Shop/shop.screen';
 import App from '../App/App';
 import { View } from 'react-native';
 import * as RootNavigation from './RootNavigation';
+import withBadge from './components/badge';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function Carrito(navigation){
-  return <View style={{ marginRight: normalize(5), flexDirection:'row', justifyContent: 'space-around', width: normalize(80) }}>
-      <Icon name="bell-outline" type="material-community" size={normalize(28)} onPress={() => RootNavigation.navigate('Home')}/>
-      <Icon name="cart-outline" type="material-community" size={normalize(28)} onPress={() => RootNavigation.navigate('Shop')}/>
+function Carrito({ item }){
+  debugger;
+  const BadgedCart = withBadge(7)(Icon);
+  const BadgedBell = withBadge(9)(Icon);
+  return <View style={{ marginRight: normalize(10), flexDirection:'row', justifyContent: 'space-around', width: normalize(85) }}>
+      <BadgedBell name="bell-outline" type="material-community" size={normalize(28)} onPress={() => RootNavigation.navigate('Home')}/>
+      <BadgedCart name="cart-outline" type="material-community" size={normalize(28)} onPress={() => RootNavigation.navigate('Shop')}/>
   </View>
 }
 
@@ -46,7 +50,7 @@ function HomeStack() {
           <Logo />
         ),
         headerRight: () => {
-          return <Carrito navigation={navigation} />
+          return <Carrito />
         }
       })} />
     </Stack.Navigator>
@@ -64,7 +68,7 @@ function BuscadorStack() {
           <Logo />
         ),
         headerRight: () => {
-          return <Carrito navigation={navigation} />
+          return <Carrito />
         }
       })} />
     </Stack.Navigator>
@@ -81,7 +85,7 @@ function ProductosStack() {
           <Logo />
         ),
         headerRight: () => {
-          return <Carrito navigation={navigation} />
+          return <Carrito />
         }
       })} />
     </Stack.Navigator>
@@ -98,9 +102,25 @@ function PerfilStack() {
           <Logo />
         ),
         headerRight: () => {
-          return <Carrito navigation={navigation} />
+          return <Carrito />
         }
       })} />
+    </Stack.Navigator>
+  );
+}
+
+function ShopStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Shop" component={ShopScreen} options={({ navigation }) => ({
+      title: "Mis compras",
+      headerTitleAlign: 'center',
+      headerLeft: () => (
+        <View style={{ marginLeft: normalize(20), flexDirection: 'row', alignItems: 'center' }}>
+          <Icon name={'arrow-left'} type={'material-community'} size={normalize(28)} onPress={() => navigation.navigate('Productos')} />
+        </View>
+      ),
+    })} />
     </Stack.Navigator>
   );
 }
@@ -145,7 +165,6 @@ function NavegacionAuth() {
     <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
     <Stack.Screen name="Registro" component={RegistroScreen} options={({ navigation }) => ({
       title: "",
-      headerTitleAlign: 'center',
       headerLeft: () => (
         <View style={{ marginLeft: normalize(20), flexDirection: 'row', alignItems: 'center' }}>
           <Icon name={'arrow-left'} type={'material-community'} size={normalize(28)} onPress={() => navigation.navigate('Login')} />
@@ -161,20 +180,14 @@ function NavegacionTabs({ route, navigation }) {
     <Stack.Screen name="Tabs" component={AppTabs} />
     <Stack.Screen name="Item" component={AgregarItemScreen} options={({ navigation }) => ({
       title: "Agregar Producto",
-      headerLeft: () => (
-        <View style={{ marginLeft: normalize(20), flexDirection: 'row', alignItems: 'center' }}>
-          <Icon name={'arrow-left'} type={'material-community'} size={normalize(28)} onPress={() => navigation.navigate('Login')} />
-        </View>
-      ),
-    })} />
-    <Stack.Screen name="Shop" component={ShopScreen} options={({ navigation }) => ({
-      title: "Carrito de Compras",
+      headerTitleAlign: 'center',
       headerLeft: () => (
         <View style={{ marginLeft: normalize(20), flexDirection: 'row', alignItems: 'center' }}>
           <Icon name={'arrow-left'} type={'material-community'} size={normalize(28)} onPress={() => navigation.navigate('Productos')} />
         </View>
       ),
     })} />
+    <Stack.Screen name="Shop" component={ShopStack} />
   </Stack.Navigator>
 }
 

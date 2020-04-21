@@ -368,13 +368,5 @@ const styles = StyleSheet.create({
         marginHorizontal: normalize(10),
         paddingTop: normalize(20, 'height'),
         borderRadius: 3
-    },
-    input:{
-        fontSize: normalize(18),
-        height: normalize(40, 'height')
-    },
-    containerInput:{
-        marginBottom: normalize(15, 'height'),
-        paddingHorizontal: normalize(20)
     }
 })
