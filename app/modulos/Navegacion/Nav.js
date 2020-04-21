@@ -14,14 +14,15 @@ import LoginScreen from '../Login/login.screen';
 import ShopScreen from '../Shop/shop.screen';
 import App from '../App/App';
 import { View } from 'react-native';
+import * as RootNavigation from './RootNavigation';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function Carrito(navigation){
   return <View style={{ marginRight: normalize(5), flexDirection:'row', justifyContent: 'space-around', width: normalize(80) }}>
-      <Icon name="bell-outline" type="material-community" size={normalize(28)} onPress={() => navigation.navigate('Home')}/>
-      <Icon name="cart-outline" type="material-community" size={normalize(28)} onPress={() => navigation.navigate('Home')}/>
+      <Icon name="bell-outline" type="material-community" size={normalize(28)} onPress={() => RootNavigation.navigate('Home')}/>
+      <Icon name="cart-outline" type="material-community" size={normalize(28)} onPress={() => RootNavigation.navigate('Shop')}/>
   </View>
 }
 

@@ -17,10 +17,10 @@ const limite = 15
 var db = null
 
 export default class Productos extends Component {
-    
-    constructor(){
+
+    constructor() {
         super();
-        this.state={
+        this.state = {
             productos: null,
             startProductos: null,
             cargando: true,
@@ -32,16 +32,25 @@ export default class Productos extends Component {
         }
     }
 
-    async componentDidMount(){
+    async componentDidMount() {
         const { params } = this.props.route
         console.log("params", params)
-        if(params && params.categoria){
+        if (params && params.categoria) {
             await this.setState({ categoria: params.categoria })
         }
+        const unsubscribe = this.props.navigation.addListener('focus', async () => {
+            const { params } = this.props.route
+            console.log("params", params)
+            if (params && params.categoria) {
+                await this.setState({ categoria: params.categoria, productos:null })
+            }
+            this.cargarProductos();
+        });
+
         db = firebase.firestore(firebaseApp);
         this.cargarProductos();
     }
-    
+
     renderModal = () => {
         const { modalVisible, cantidad } = this.state
         const { prod_costo, prod_nombre, prod_url } = this.state.selectProd
@@ -51,47 +60,47 @@ export default class Productos extends Component {
             transparent={true}
             visible={modalVisible}
             onRequestClose={() => {
-                this.setState({ modalVisible: !modalVisible})
+                this.setState({ modalVisible: !modalVisible })
             }}>
             <View style={styles.containerModal}>
                 <View style={styles.modal}>
-                    {Platform.OS === "ios" && <View style={{ alignItems:'flex-end', paddingRight: normalize(20) }}>
+                    {Platform.OS === "ios" && <View style={{ alignItems: 'flex-end', paddingRight: normalize(20) }}>
                         <Icon type='material-community' name='chevron-down' color={Colors.Menu} size={normalize(30)} onPress={() => {
-                            this.setState({ modalVisible: !modalVisible})
+                            this.setState({ modalVisible: !modalVisible })
                         }} />
                     </View>}
-                    <View style={{ alignItems:'center', marginBottom: normalize(15, 'height') }}>
-                        <Image placeholderStyle={{ backgroundColor: 'white' }} style={styles.imageModal} resizeMode='stretch' source={{ uri: prod_url }} PlaceholderContent={<ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />} /> 
-                        <Text style={{ fontSize: normalize(15), textAlign:'center', marginHorizontal: normalize(25), marginTop: normalize(5, 'height')}}>{prod_nombre}</Text>
+                    <View style={{ alignItems: 'center', marginBottom: normalize(15, 'height') }}>
+                        <Image placeholderStyle={{ backgroundColor: 'white' }} style={styles.imageModal} resizeMode='stretch' source={{ uri: prod_url }} PlaceholderContent={<ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />} />
+                        <Text style={{ fontSize: normalize(15), textAlign: 'center', marginHorizontal: normalize(25), marginTop: normalize(5, 'height') }}>{prod_nombre}</Text>
                     </View>
-                    <View style={{ flexDirection: 'row' , justifyContent: 'space-around', marginVertical: normalize(15, 'height') }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: normalize(15, 'height') }}>
                         <View style={styles.cantidad}>
-                            <Icon reverse  name='minus' type='material-community' color={Colors.accent} size={normalize(12)} onPress={()=>{
-                                let restar = cantidad == 1 ? 1 : cantidad - 1 
+                            <Icon reverse name='minus' type='material-community' color={Colors.accent} size={normalize(12)} onPress={() => {
+                                let restar = cantidad == 1 ? 1 : cantidad - 1
                                 this.setState({ cantidad: restar })
                             }} />
                             <Text style={styles.textCantidad}>{cantidad}</Text>
-                            <Icon reverse name='plus' type='material-community' color={Colors.primaryButton} size={normalize(12)} onPress={()=>{
+                            <Icon reverse name='plus' type='material-community' color={Colors.primaryButton} size={normalize(12)} onPress={() => {
                                 this.setState({ cantidad: cantidad + 1 })
-                            }}/>
+                            }} />
                         </View>
-                        <Button title={"Agregar $" + costo} buttonStyle={{ backgroundColor: Colors.Menu }} onPress={()=>{
+                        <Button title={"Agregar $" + costo} buttonStyle={{ backgroundColor: Colors.Menu }} onPress={() => {
                             this.agregarCarrito(selectProd, cantidad)
                             this.setState({ modalVisible: !modalVisible, cantidad: 1 })
-                        }}/>
+                        }} />
                     </View>
                 </View>
             </View>
         </Modal>
     }
-    
-    urlImagen = (uid, index) =>{
+
+    urlImagen = (uid, index) => {
         firebase.storage().ref(`productos/${uid}.png`).getDownloadURL().then(result => {
             const { productos } = this.state
             let item = productos[index]
             let id = item.prod_imagen;
-            
-            if(item.prod_estado){
+
+            if (item.prod_estado) {
                 item.prod_url = result;
                 item.prod_url_agotado = item.prod_url_agotado ? item.prod_url_agotado : '';
             } else {
@@ -99,49 +108,49 @@ export default class Productos extends Component {
                 item.prod_url_agotado = result;
             }
             this.updateData(id, item)
-     
-        }).catch((err)=>{
+
+        }).catch((err) => {
             let { productos } = this.state
             console.log("err", err)
             console.log("uid", uid + productos[index].prod_nombre)
         });
     }
 
-    updateData = (id, item) =>{
-        db.doc(`tbl_productos/${id}`).set(item).then(()=>{
+    updateData = (id, item) => {
+        db.doc(`tbl_productos/${id}`).set(item).then(() => {
             console.log("Actualización correcta", id)
-        }).catch((err)=>{
+        }).catch((err) => {
             console.log("Error Actualización", err)
         })
     }
 
-    renderProductos = ({item, index}) => {
+    renderProductos = ({ item, index }) => {
         try {
             const { modalVisible } = this.state
             let url_producto = url_default
-            if (item.prod_estado){
-                if(item.prod_url){
+            if (item.prod_estado) {
+                if (item.prod_url) {
                     url_producto = item.prod_url;
                 } else {
                     this.urlImagen(item.prod_imagen, index)
                 }
             } else {
-                if(item.prod_url_agotado){
+                if (item.prod_url_agotado) {
                     url_producto = item.prod_url_agotado;
                 } else {
                     this.urlImagen(item.prod_imagen_agotado, index)
                 }
             }
             let costo = (item.prod_costo).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-            return <TouchableNative onPress={()=>{
-                    if(item.prod_estado){
-                        this.setState({ modalVisible: !modalVisible, selectProd: item })
-                    } else {
-                        Alert.alert("Producto agotado")
-                    }
-                }}>
+            return <TouchableNative onPress={() => {
+                if (item.prod_estado) {
+                    this.setState({ modalVisible: !modalVisible, selectProd: item })
+                } else {
+                    Alert.alert("Producto agotado")
+                }
+            }}>
                 <View style={styles.pintarProduct}>
-                    <Image placeholderStyle={{ backgroundColor: 'white' }} style={styles.imageProduct} resizeMode='contain' source={{ uri: url_producto }} PlaceholderContent={<ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />} /> 
+                    <Image placeholderStyle={{ backgroundColor: 'white' }} style={styles.imageProduct} resizeMode='contain' source={{ uri: url_producto }} PlaceholderContent={<ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />} />
                     <Text ellipsizeMode={'tail'} numberOfLines={2} style={{ fontSize: normalize(12), paddingLeft: normalize(8) }}>{item.prod_nombre}</Text>
                     <Text ellipsizeMode={'tail'} numberOfLines={1} style={{ fontSize: normalize(13), paddingLeft: normalize(8) }}>${costo}</Text>
                 </View>
@@ -152,20 +161,20 @@ export default class Productos extends Component {
         }
     }
 
-    cargarProductos = async() => {
+    cargarProductos = async () => {
         const { categoria, cargando } = this.state
         let resultProductos = []
 
         const items = categoria ?
-            db.collection("tbl_productos").where("prod_tipo", "==", categoria).orderBy("prod_nombre", "asc").limit(limite):
+            db.collection("tbl_productos").where("prod_tipo", "==", categoria).orderBy("prod_nombre", "asc").limit(limite) :
             db.collection("tbl_productos").orderBy("prod_nombre", "asc").limit(limite);
-        await items.get().then(result =>{
-            if(result.docs.length == limite){
+        await items.get().then(result => {
+            if (result.docs.length == limite) {
                 this.setState({ startProductos: result.docs[result.docs.length - 1].data() })
             } else {
                 this.setState({ cargando: !cargando })
             }
-            
+
             result.forEach(element => {
                 resultProductos.push(element.data());
             });
@@ -173,21 +182,21 @@ export default class Productos extends Component {
         });
     }
 
-    agregarProductos = async() => {
+    agregarProductos = async () => {
         const { startProductos, productos, cargando, categoria } = this.state
         let resultProductos = productos
-        
+
         const items = categoria ?
-            db.collection("tbl_productos").where("prod_tipo", "==", categoria).orderBy("prod_nombre", "asc").startAfter(startProductos.prod_nombre).limit(limite):
+            db.collection("tbl_productos").where("prod_tipo", "==", categoria).orderBy("prod_nombre", "asc").startAfter(startProductos.prod_nombre).limit(limite) :
             db.collection("tbl_productos").orderBy("prod_nombre", "asc").startAfter(startProductos.prod_nombre).limit(limite);
-        
-        await items.get().then(result =>{
-            if(result.docs.length > 0){
+
+        await items.get().then(result => {
+            if (result.docs.length > 0) {
                 this.setState({ startProductos: result.docs[result.docs.length - 1].data() })
             } else {
                 this.setState({ cargando: !cargando })
             }
-            
+
             result.forEach(element => {
                 resultProductos.push(element.data());
             });
@@ -195,17 +204,17 @@ export default class Productos extends Component {
         });
     }
 
-    renderFooter = () =>{
-        return <View style={{ marginVertical: normalize(10, 'height'), alignItems:'center' }}>
+    renderFooter = () => {
+        return <View style={{ marginVertical: normalize(10, 'height'), alignItems: 'center' }}>
             {this.state.cargando ? <ActivityIndicator size="small" animating={true} color={Colors.primaryButton} /> :
-            <Text>No quedan productos por cargar</Text>}
+                <Text>No quedan productos por cargar</Text>}
         </View>
     }
 
-    agregarCarrito = async(item, cantidad) =>{
+    agregarCarrito = async (item, cantidad) => {
         let data = await getShop();
         let encontro = data.find(e => e.prod_imagen == item.prod_imagen)
-        if(encontro){
+        if (encontro) {
             let index = data.findIndex(e => e.prod_imagen == item.prod_imagen)
             encontro.prod_cantidad = encontro.prod_cantidad + cantidad
             data[index] = encontro
@@ -216,15 +225,15 @@ export default class Productos extends Component {
         await setShop(data);
     }
 
-    refreshProductos = async() =>{
+    refreshProductos = async () => {
         const { refreshing } = this.state
         this.setState({ refreshing: !refreshing });
         let resultProductos = []
 
         const items = db.collection("tbl_productos").orderBy("prod_nombre", "asc").limit(limite);
-        await items.get().then(result =>{
+        await items.get().then(result => {
             this.setState({ startProductos: result.docs[result.docs.length - 1].data() })
-            
+
             result.forEach(element => {
                 resultProductos.push(element.data());
             });
@@ -234,8 +243,8 @@ export default class Productos extends Component {
 
     render() {
         const { productos, refreshing } = this.state
-        if(!productos || refreshing){
-            return <View style={{ flex: 1, justifyContent:'center' }}>
+        if (!productos || refreshing) {
+            return <View style={{ flex: 1, justifyContent: 'center' }}>
                 <ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />
             </View>
         }
@@ -257,45 +266,45 @@ export default class Productos extends Component {
 }
 
 const styles = StyleSheet.create({
-    pintarProduct:{
+    pintarProduct: {
         marginVertical: normalize(10, 'height'),
-        width: DeviceScreen.width/3.1,
+        width: DeviceScreen.width / 3.1,
         paddingHorizontal: normalize(desface ? 9 : 4),
     },
-    imageProduct:{
+    imageProduct: {
         width: normalize(110),
         height: normalize(80, 'height')
     },
-    imageModal:{
+    imageModal: {
         width: normalize(160),
         height: normalize(130, 'height')
     },
-    container:{
-        flex: 1, 
+    container: {
+        flex: 1,
         backgroundColor: '#FFF'
     },
-    containerModal:{
-        flex: 1, 
-        justifyContent:'flex-end',
+    containerModal: {
+        flex: 1,
+        justifyContent: 'flex-end',
         backgroundColor: 'rgba(218,218,218, 0.8)'
     },
-    modal:{
-        backgroundColor: 'rgba(255,255,255, 0.9)', 
-        marginHorizontal: normalize(5), 
+    modal: {
+        backgroundColor: 'rgba(255,255,255, 0.9)',
+        marginHorizontal: normalize(5),
         borderTopLeftRadius: normalize(30),
         borderTopRightRadius: normalize(30),
         paddingTop: normalize(20, 'height'),
     },
-    textCantidad:{
+    textCantidad: {
         fontSize: normalize(25),
         fontWeight: 'bold',
         marginHorizontal: normalize(20),
     },
-    cantidad:{
+    cantidad: {
         borderWidth: 1,
-        flexDirection: 'row', 
-        alignItems:'center', 
-        paddingBottom: normalize(2, 'height'), 
-        borderRadius: normalize(5) 
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingBottom: normalize(2, 'height'),
+        borderRadius: normalize(5)
     }
 })

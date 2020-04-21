@@ -13,6 +13,7 @@ import * as Firebase from 'firebase';
 import { NavegacionAuth } from './app/modulos/Navegacion/Nav'
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
+import { navigationRef } from './app/modulos/Navegacion/RootNavigation';
 
 console.disableYellowBox = true;
 Firebase.initializeApp(FirebaseConfig);
@@ -21,7 +22,7 @@ export default class App extends Component {
   render() {
     return <View style={styles.container}>
       <StatusBar backgroundColor="#fff" barStyle='dark-content' />
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <NavegacionAuth />
       </NavigationContainer>
     </View>
