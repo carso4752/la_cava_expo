@@ -5,19 +5,18 @@ import { View, Text, StyleSheet, Alert, Dimensions, Modal, Platform, FlatList, R
 import TouchableNative from '../shared/touchableNative';
 import Colors from '../../theme/colors';
 import { ActivityIndicator } from 'react-native-paper';
-import { getShop, setShop } from '../Shop/shop.utils'
 
 import { firebaseApp } from '../Database/Firebase'
 import * as firebase from 'firebase';
 import 'firebase/firestore'
+import { inject, observer } from "mobx-react";
 
 const DeviceScreen = Dimensions.get('screen')
 const desface = DeviceScreen.width > 320 ? true : false
 const url_default = 'https://firebasestorage.googleapis.com/v0/b/lacava-a1dab.appspot.com/o/productos%2Fsin_imagen.jpg?alt=media&token=45b98d82-76c2-44a1-a8b4-911acc895e56'
 const limite = 15
 var db = null
-
-export default class Productos extends Component {
+class Productos extends Component {
 
     constructor() {
         super();
@@ -40,6 +39,7 @@ export default class Productos extends Component {
         }
         const unsubscribe = this.props.navigation.addListener('focus', async () => {
             const { params } = this.props.route
+            console.log("params", params)
             if (params && params.categoria) {
                 await this.setState({ categoria: params.categoria, productos:null })
             }
@@ -51,6 +51,7 @@ export default class Productos extends Component {
     }
 
     renderModal = () => {
+        const { setShop : setShoop, shop } = this.props.store;
         const { modalVisible, cantidad, selectProd } = this.state
         const { prod_costo, prod_nombre, prod_url } = this.state.selectProd
         let costo = (prod_costo * cantidad).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
@@ -84,6 +85,7 @@ export default class Productos extends Component {
                             }} />
                         </View>
                         <Button title={"Agregar $" + costo} buttonStyle={{ backgroundColor: Colors.Menu }} onPress={() => {
+                            setShoop(shop+this.state.cantidad);
                             this.agregarCarrito(selectProd, cantidad)
                             this.setState({ modalVisible: !modalVisible, cantidad: 1 })
                         }} />
@@ -263,6 +265,8 @@ export default class Productos extends Component {
         </View>
     }
 }
+
+export default inject("store")(observer(Productos));
 
 const styles = StyleSheet.create({
     pintarProduct: {
