@@ -22,12 +22,9 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    const {setShop} = this.props.store;
+    const {setShopBadge} = this.props.store;
     getShop().then((data) => {
-      if (data) {
-        let cantidad = Object.values(data).reduce((t, {prod_cantidad}) => t + prod_cantidad, 0)
-        setShop(cantidad);
-      }
+        setShopBadge(data.length);
     });
     firebase
       .storage()
@@ -219,6 +216,8 @@ class Home extends Component {
   }
 }
 
+export default inject('store')(observer(Home));
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -231,4 +230,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default inject('store')(observer(Home));

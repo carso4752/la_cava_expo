@@ -5,7 +5,7 @@ import normalize from 'react-native-normalize';
 import Colors from '../../theme/colors';
 import { ActivityIndicator } from 'react-native-paper';
 import { getShop, setShop } from '../Shop/shop.utils'
-
+import { inject, observer } from 'mobx-react';
 import { firebaseApp } from '../Database/Firebase'
 import * as firebase from 'firebase';
 import 'firebase/firestore'
@@ -14,7 +14,7 @@ import { FireSQL } from 'firesql'
 var fireSql = null
 const url_default = 'https://firebasestorage.googleapis.com/v0/b/lacava-a1dab.appspot.com/o/productos%2Fsin_imagen.jpg?alt=media&token=45b98d82-76c2-44a1-a8b4-911acc895e56'
 
-export default class Buscador extends Component {
+class Buscador extends Component {
   
     state = {
         cargando: false,
@@ -124,6 +124,7 @@ export default class Buscador extends Component {
     }
 
     agregarCarrito = async(item, cantidad) =>{
+        const { setShopBadge } = this.props.store
         let data = await getShop();
         let encontro = data.find(e => e.prod_imagen == item.prod_imagen)
         if(encontro){
@@ -135,6 +136,7 @@ export default class Buscador extends Component {
             data.push(item)
         }
         await setShop(data);
+        setShopBadge(data.length)
     }
 
     render() {
@@ -173,6 +175,8 @@ export default class Buscador extends Component {
         </View>
     }
 }
+
+export default inject("store")(observer(Buscador))
 
 const styles = StyleSheet.create({
     container:{

@@ -2,21 +2,21 @@ import { decorate, observable, action } from "mobx";
 
 class Store {
   shop = 0;
-  setShop = (shop) => {
+  setShopBadge = (shop) => {
     this.shop = shop;
   }
 
   noty = 0;
-  setNoty = (noty) => {
+  setNotyBadge = (noty) => {
     this.noty = noty;
   }
 }
 
 decorate(Store, {
   shop: observable,
-  setShop: action,
+  setShopBadge: action,
   noty: observable,
-  setNoty: action,
+  setNotyBadge: action,
 });
 
 // export class

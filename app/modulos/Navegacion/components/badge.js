@@ -22,17 +22,18 @@ const styles = StyleSheet.create({
 class Badges extends React.Component {
   
   render() {
+    const { value } = this.props
     const {
       top = -5,
       right = 0,
       left = 18,
       bottom = 0,
-      hidden = !this.props.value,
       ...badgeProps
     } = this.props.options;
 
     const { shop, noty } = this.props.store;
-
+    let valor = value == 's' ? shop : noty;
+    let hidden = valor > 0 ? false : true;
     return (
       <View onPress={this.props.onPress}>
         {this.props.Icon}
@@ -40,7 +41,7 @@ class Badges extends React.Component {
           <Badge
             badgeStyle={styles.badge}
             textStyle={styles.badgeText}
-            value={this.props.value == 's' ? shop : noty}
+            value={valor}
             status="error"
             containerStyle={[styles.badgeContainer, {top, right, left, bottom}]}
             {...badgeProps}

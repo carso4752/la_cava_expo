@@ -8,13 +8,14 @@ import * as Location from 'expo-location';
 import * as Permission from 'expo-permissions';
 import MapView, { Polyline } from 'react-native-maps';
 import { Marker } from 'react-native-maps';
+import { inject, observer } from "mobx-react";
 
 const desLatitude = 6.323032;
 const desLongitude = -75.559653;
 const endLocation = `${desLatitude},${desLongitude}`;
 const GOOGLE_API_KEY = "AIzaSyDksKJmn8PnAW5lXEQm2UZwf8GIkX8QrVQ";
 
-export default class Shop extends Component {
+class Shop extends Component {
   
     state = {
         compras: [],
@@ -36,10 +37,12 @@ export default class Shop extends Component {
     }
 
     eliminarProducto = async(item) =>{
+        const { setShopBadge } = this.props.store
         var data = await getShop();
         let index = data.findIndex(e => e.prod_imagen == item.prod_imagen)
         data.splice(index, 1)
         await setShop(data);
+        setShopBadge(data.length)
     }
 
     renderResultados(){
@@ -158,13 +161,14 @@ export default class Shop extends Component {
     }
 
     render() {    
-        console.log("data", data)  
         return <View style={styles.container}>
             {this.renderResultados()}
             {this.renderMap()}
         </View>
     }
 }
+
+export default inject("store")(observer(Shop))
 
 const styles = StyleSheet.create({
     container:{

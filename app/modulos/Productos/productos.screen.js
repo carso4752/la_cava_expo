@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, Alert, Dimensions, Modal, Platform, FlatList, R
 import TouchableNative from '../shared/touchableNative';
 import Colors from '../../theme/colors';
 import { ActivityIndicator } from 'react-native-paper';
-
+import { getShop, setShop } from '../Shop/shop.utils'
 import { firebaseApp } from '../Database/Firebase'
 import * as firebase from 'firebase';
 import 'firebase/firestore'
@@ -16,6 +16,7 @@ const desface = DeviceScreen.width > 320 ? true : false
 const url_default = 'https://firebasestorage.googleapis.com/v0/b/lacava-a1dab.appspot.com/o/productos%2Fsin_imagen.jpg?alt=media&token=45b98d82-76c2-44a1-a8b4-911acc895e56'
 const limite = 15
 var db = null
+
 class Productos extends Component {
 
     constructor() {
@@ -50,8 +51,7 @@ class Productos extends Component {
         this.cargarProductos();
     }
 
-    renderModal = () => {
-        const { setShop : setShoop, shop } = this.props.store;
+    renderModal = () => {        
         const { modalVisible, cantidad, selectProd } = this.state
         const { prod_costo, prod_nombre, prod_url } = this.state.selectProd
         let costo = (prod_costo * cantidad).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
@@ -85,7 +85,6 @@ class Productos extends Component {
                             }} />
                         </View>
                         <Button title={"Agregar $" + costo} buttonStyle={{ backgroundColor: Colors.Menu }} onPress={() => {
-                            setShoop(shop+this.state.cantidad);
                             this.agregarCarrito(selectProd, cantidad)
                             this.setState({ modalVisible: !modalVisible, cantidad: 1 })
                         }} />
@@ -213,6 +212,7 @@ class Productos extends Component {
     }
 
     agregarCarrito = async (item, cantidad) => {
+        const { setShopBadge } = this.props.store;
         let data = await getShop();
         let encontro = data.find(e => e.prod_imagen == item.prod_imagen)
         if (encontro) {
@@ -224,6 +224,7 @@ class Productos extends Component {
             data.push(item)
         }
         await setShop(data);
+        setShopBadge(data.length);
     }
 
     refreshProductos = async () => {
