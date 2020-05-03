@@ -27,7 +27,7 @@
       "supportsTablet": true
     },
     "android":{
-      "permissions" : ["CAMERA_ROLL"]
+      "permissions" : ["CAMERA_ROLL", "LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
     }
   }
 }
