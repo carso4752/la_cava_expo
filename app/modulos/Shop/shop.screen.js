@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
-import { ListItem, Icon, Input, Overlay } from 'react-native-elements';
+import { ListItem, Icon, Input, Overlay, Button } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import { getShop, setShop } from './shop.utils';
 import Colors from '../../theme/colors';
 import * as Location from 'expo-location';
 import * as Permission from 'expo-permissions';
-import MapView, { Polyline } from 'react-native-maps';
+import MapView from 'react-native-maps';
 import { Marker } from 'react-native-maps';
 import { inject, observer } from "mobx-react";
+import { WebView } from 'react-native-webview';
 
 const desLatitude = 6.323032;
 const desLongitude = -75.559653;
@@ -21,7 +22,8 @@ class Shop extends Component {
         compras: [],
         region: null,
         mapVisible: false,
-        location: null
+        location: null,
+        payuVisible: false
     }
 
     componentDidMount(){
@@ -46,7 +48,7 @@ class Shop extends Component {
     }
 
     renderResultados(){
-        const { compras, direccion, mapVisible } = this.state
+        const { compras, direccion, mapVisible, payuVisible } = this.state
         let total = 0
         return <>
             { compras.length == 0 ? <View style={styles.result}>
@@ -118,6 +120,9 @@ class Shop extends Component {
                         />
                     }
                 />
+                <Button title={"Pagar"} onPress={()=>{
+                    this.setState({ payuVisible: !payuVisible })
+                }} />
             </View>}
             <View style={styles.total}>
                 <Text style={{ fontSize: normalize(25), color:'#fff' }}>TOTAL</Text>
@@ -132,6 +137,37 @@ class Shop extends Component {
     //     Linking.openURL(URL)
     // }
 
+    renderpago = () => {
+        const { payuVisible } = this.state
+        return <Overlay
+            isVisible={payuVisible}
+            windowBackgroundColor='rgba(218,218,218, 0.8)'
+            overlayBackgroundColor='transparent'
+            overlayStyle={styles.modalPago}
+            onBackdropPress={() => {
+                this.setState({ payuVisible: !payuVisible })
+            }}>
+            <WebView source={{
+                html: ` <form method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/">
+                <input name="merchantId"    type="hidden"  value="508029"   >
+                <input name="accountId"     type="hidden"  value="512321" >
+                <input name="description"   type="hidden"  value="Test PAYU"  >
+                <input name="referenceCode" type="hidden"  value="TestPayULaCava" >
+                <input name="amount"        type="hidden"  value="20000"   >
+                <input name="tax"           type="hidden"  value="3193"  >
+                <input name="taxReturnBase" type="hidden"  value="16806" >
+                <input name="currency"      type="hidden"  value="COP" >
+                <input name="signature"     type="hidden"  value="6928fa98ccf437c507699f6332d3be02"  >
+                <input name="test"          type="hidden"  value="1" >
+                <input name="buyerEmail"    type="hidden"  value="test@test.com" >
+                <input name="responseUrl"    type="hidden"  value="http://www.test.com/response" >
+                <input name="confirmationUrl"    type="hidden"  value="http://www.test.com/confirmation" >
+                <input name="Submit"        type="submit"  value="Enviar" >
+              </form>`
+            }} />
+        </Overlay>
+    }
+
     renderMap = () =>{
         const { mapVisible, location } = this.state
         return <Overlay
@@ -143,7 +179,7 @@ class Shop extends Component {
                 this.setState({ mapVisible: !mapVisible })
             }}>
             <View>
-                { location && 
+                { location &&
                     <MapView
                         showsUserLocation
                         style={styles.map}                    
@@ -164,6 +200,7 @@ class Shop extends Component {
         return <View style={styles.container}>
             {this.renderResultados()}
             {this.renderMap()}
+            {this.renderpago()}
         </View>
     }
 }
@@ -190,6 +227,11 @@ const styles = StyleSheet.create({
     },
     modal:{
         height:'auto',
+        width: normalize(350),
+        backgroundColor:'#fff',
+    },
+    modalPago:{
+        height: normalize(500, 'height'),
         width: normalize(350),
         backgroundColor:'#fff',
     },
