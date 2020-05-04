@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { View, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 
-import md5 from 'md5';
+import md5 from 'react-native-md5';
 
 export default class payU extends Component {
 
@@ -34,7 +34,7 @@ export default class payU extends Component {
             total = total + item.prod_costo * item.prod_cantidad;
             let costo = '$' + (item.prod_costo * item.prod_cantidad).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
             html += `<li style="display: flex; margin-top: 5px; margin-bottom: 15px; padding: 10px">
-                    <img src="${item.prod_url}" width="150px" height="140px">
+                    <img src="${item.prod_url}" width="125px" height="100px">
                     <div style="margin-left: 15px">
                         <p style="font-size: 38px; margin-top:0; margin-bottom: 2px; color: #404040">
                             ${item.prod_nombre + ' X ' + item.prod_cantidad}
@@ -46,18 +46,17 @@ export default class payU extends Component {
                 </li>`;
         }
 
-        let ApiKey = "";
+        let ApiKey = "4Vj8eK4rloUd272L48hsrarnUA";
         let currency = 'COP';
         let merchantId = "508029";
         let referenceCode = "TestPayULaCava";
+        let signature = md5.hex_md5(`${ApiKey}~${merchantId}~${referenceCode}~${total}~${currency}`);
 
-        let signature = md5(ApiKey+merchantId+referenceCode+total+currency); 
-    
         html += `</ul> <form method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/">
                 <input name="merchantId"    type="hidden"  value="${merchantId}"   >
                 <input name="accountId"     type="hidden"  value="512321" >
-                <input name="description"   type="hidden"  value="Test PAYU"  >
-                <input name="referenceCode" type="hidden"  value="${TestPayULaCava}" >
+                <input name="description"   type="hidden"  value="Compra productos La Cava"  >
+                <input name="referenceCode" type="hidden"  value="${referenceCode}" >
                 <input name="amount"        type="hidden"  value="${total}"   >
                 <input name="currency"      type="hidden"  value="${currency}" >
                 <input name="signature"     type="hidden"  value="${signature}"  >
