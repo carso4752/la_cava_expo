@@ -12,6 +12,7 @@ import PerfilScreen from '../Perfil/perfil.screen';
 import RegistroScreen from '../Registro/registro.screen';
 import LoginScreen from '../Login/login.screen';
 import ShopScreen from '../Shop/shop.screen';
+import PayUScreen from '../Shop/payU.screen';
 import App from '../App/App';
 import {View} from 'react-native';
 import * as RootNavigation from './RootNavigation';
@@ -179,6 +180,37 @@ function ShopStack() {
   );
 }
 
+function PayUStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="PayU"
+        component={PayUScreen}
+        options={({navigation}) => ({
+          title: 'Pago en Linea',
+          headerTitleAlign: 'center',
+          headerLeft: () => (
+            <View
+              style={{
+                marginLeft: normalize(20),
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Icon
+                name={'arrow-left'}
+                type={'material-community'}
+                size={normalize(28)}
+                onPress={() => navigation.navigate('Shop')}
+              />
+            </View>
+          ),
+        })}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function AppTabs() {
   return (
     <Tab.Navigator
@@ -326,6 +358,7 @@ function NavegacionTabs({route, navigation}) {
         })}
       />
       <Stack.Screen name="Shop" component={ShopStack} />
+      <Stack.Screen name="PayU" component={PayUStack} />
     </Stack.Navigator>
   );
 }

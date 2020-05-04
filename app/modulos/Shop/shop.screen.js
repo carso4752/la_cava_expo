@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Picker } from 'react-native';
 import { ListItem, Icon, Input, Overlay, Button } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import { getShop, setShop } from './shop.utils';
@@ -9,7 +9,6 @@ import * as Permission from 'expo-permissions';
 import MapView from 'react-native-maps';
 import { Marker } from 'react-native-maps';
 import { inject, observer } from "mobx-react";
-import { WebView } from 'react-native-webview';
 
 const desLatitude = 6.323032;
 const desLongitude = -75.559653;
@@ -20,10 +19,9 @@ class Shop extends Component {
   
     state = {
         compras: [],
-        region: null,
         mapVisible: false,
         location: null,
-        payuVisible: false
+        medioPago: "credit-card"
     }
 
     componentDidMount(){
@@ -48,7 +46,7 @@ class Shop extends Component {
     }
 
     renderResultados(){
-        const { compras, direccion, mapVisible, payuVisible } = this.state
+        const { compras } = this.state
         let total = 0
         return <>
             { compras.length == 0 ? <View style={styles.result}>
@@ -96,10 +94,21 @@ class Shop extends Component {
                     />
                 })}
             </ScrollView> }
-            { compras.length > 0  && <View style={{ margin: 10 }}>
+            { compras.length > 0  && this.renderOpciones() }
+            <View style={styles.total}>
+                <Text style={{ fontSize: normalize(25), color:'#fff' }}>TOTAL</Text>
+                <Text style={{ fontSize: normalize(22), color:'#fff' }}>$ {(total).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</Text>
+            </View>
+        </>
+    }
+
+    renderOpciones = () => {
+        const { mapVisible, medioPago } = this.state
+        return <>
+            <View style={{ marginVertical: 10 }}>
                 <Input
-                    placeholder='Dirrección'
-                    value={direccion}
+                    containerStyle={{ marginBottom: normalize(15, 'height') }}
+                    placeholder='Ubicación'
                     rightIconContainerStyle={{ paddingRight: normalize(15) }}
                     rightIcon={
                         <Icon 
@@ -120,52 +129,37 @@ class Shop extends Component {
                         />
                     }
                 />
-                <Button title={"Pagar"} onPress={()=>{
-                    this.setState({ payuVisible: !payuVisible })
-                }} />
-            </View>}
-            <View style={styles.total}>
-                <Text style={{ fontSize: normalize(25), color:'#fff' }}>TOTAL</Text>
-                <Text style={{ fontSize: normalize(22), color:'#fff' }}>$ {(total).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</Text>
+                <View style={{ marginBottom: normalize(15, 'height'), flexDirection: 'row', justifyContent:'flex-start' }}>
+                    <Text style={{ marginLeft: 10, fontSize: normalize(18) }}>Medio de pago:</Text>
+                    <Picker
+                        selectedValue={medioPago}
+                        style={{ height: normalize(20, 'height'), width: normalize (240) }}
+                        onValueChange={(itemValue) => this.setState({ medioPago: itemValue })}
+                        itemStyle={{ color: 'red' }}
+                    >
+                        <Picker.Item label="Tarjeta" value="credit-card" />
+                        <Picker.Item label="Efectivo" value="money" />
+                        <Picker.Item label="QR" value="qrcode" />
+                    </Picker>
+                </View>
             </View>
-        </>
-    }
-
-    // renderDistancia = async(location) =>{
-    //     const startLocation = `${location.latitude},${location.longitude}`;
-    //     const URL = (`https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=${endLocation}&origin=${startLocation}`);
-    //     Linking.openURL(URL)
-    // }
-
-    renderpago = () => {
-        const { payuVisible } = this.state
-        return <Overlay
-            isVisible={payuVisible}
-            windowBackgroundColor='rgba(218,218,218, 0.8)'
-            overlayBackgroundColor='transparent'
-            overlayStyle={styles.modalPago}
-            onBackdropPress={() => {
-                this.setState({ payuVisible: !payuVisible })
-            }}>
-            <WebView source={{
-                html: ` <form method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/">
-                <input name="merchantId"    type="hidden"  value="508029"   >
-                <input name="accountId"     type="hidden"  value="512321" >
-                <input name="description"   type="hidden"  value="Test PAYU"  >
-                <input name="referenceCode" type="hidden"  value="TestPayULaCava" >
-                <input name="amount"        type="hidden"  value="20000"   >
-                <input name="tax"           type="hidden"  value="3193"  >
-                <input name="taxReturnBase" type="hidden"  value="16806" >
-                <input name="currency"      type="hidden"  value="COP" >
-                <input name="signature"     type="hidden"  value="6928fa98ccf437c507699f6332d3be02"  >
-                <input name="test"          type="hidden"  value="1" >
-                <input name="buyerEmail"    type="hidden"  value="test@test.com" >
-                <input name="responseUrl"    type="hidden"  value="http://www.test.com/response" >
-                <input name="confirmationUrl"    type="hidden"  value="http://www.test.com/confirmation" >
-                <input name="Submit"        type="submit"  value="Enviar" >
-              </form>`
+            <Button 
+                buttonStyle={{ backgroundColor: Colors.primaryButton }}
+                titleStyle={{ fontSize: normalize(20) }}
+                title={"PAGAR"}
+                icon={
+                    <Icon
+                        type='font-awesome'
+                        name={medioPago}
+                        size={normalize(20)}
+                        color="white"
+                        iconStyle={{ marginRight: 5 }}
+                    />
+                }
+                onPress={()=>{
+                this.props.navigation.navigate('PayU');
             }} />
-        </Overlay>
+        </>
     }
 
     renderMap = () =>{
@@ -200,7 +194,6 @@ class Shop extends Component {
         return <View style={styles.container}>
             {this.renderResultados()}
             {this.renderMap()}
-            {this.renderpago()}
         </View>
     }
 }
@@ -227,11 +220,6 @@ const styles = StyleSheet.create({
     },
     modal:{
         height:'auto',
-        width: normalize(350),
-        backgroundColor:'#fff',
-    },
-    modalPago:{
-        height: normalize(500, 'height'),
         width: normalize(350),
         backgroundColor:'#fff',
     },
