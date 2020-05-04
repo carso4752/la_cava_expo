@@ -13,7 +13,7 @@ import { inject, observer } from "mobx-react";
 const desLatitude = 6.323032;
 const desLongitude = -75.559653;
 const endLocation = `${desLatitude},${desLongitude}`;
-const GOOGLE_API_KEY = "AIzaSyDksKJmn8PnAW5lXEQm2UZwf8GIkX8QrVQ";
+const GOOGLE_API_KEY = 'AIzaSyDksKJmn8PnAW5lXEQm2UZwf8GIkX8QrVQ';
 
 class Shop extends Component {
   
@@ -45,65 +45,90 @@ class Shop extends Component {
         setShopBadge(data.length)
     }
 
-    renderResultados(){
-        const { compras } = this.state
-        let total = 0
+    renderResultados() {
+        const {compras} = this.state;
+        let total = 0;
         return <>
-            { compras.length == 0 ? <View style={styles.result}>
-                <View style={{ marginTop: normalize(10, 'height'), marginBottom: normalize(3, 'height') }}>
-                    <Icon type="material-community" name="cart-arrow-down" size={normalize(80)} color={'grey'}/>
-                </View>
-                <Text style={{ textAlign:'center', fontSize: normalize(18) }}>Agrega productos al carrito</Text>
-            </View> :
-            <ScrollView>
-                {(compras).map((item, index) => {
-                    total = total + (item.prod_costo * item.prod_cantidad);
-                    let costo = '$' + (item.prod_costo * item.prod_cantidad).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+            {compras.length == 0 ? <View style={styles.result}>
+                    <View style={{ marginTop: normalize(10, 'height'), marginBottom: normalize(3, 'height') }} >
+                        <Icon
+                            type="material-community"
+                            name="cart-arrow-down"
+                            size={normalize(80)}
+                            color={'grey'}
+                        />
+                    </View>
+                    <Text style={{textAlign: 'center', fontSize: normalize(18)}}>Agrega productos al carrito</Text>
+                </View> :
+                <ScrollView>
+                {compras.map((item, index) => {
+                    total = total + item.prod_costo * item.prod_cantidad;
+                    let costo = '$' + (item.prod_costo * item.prod_cantidad).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                     return <ListItem
                         key={index}
-                        titleStyle={{ fontSize: normalize(15) }}
+                        titleStyle={{fontSize: normalize(15)}}
                         title={item.prod_nombre + ' X ' + item.prod_cantidad}
                         subtitle={costo}
                         leftAvatar={{
                             title: item.prod_nombre[0],
-                            size:'medium',
-                            source: { uri: item.prod_url },
-                            overlayContainerStyle: { backgroundColor: 'white' },
-                            imageProps: { resizeMode: 'contain' }
-                        }}
+                            size: 'medium',
+                            source: {uri: item.prod_url},
+                            overlayContainerStyle: {backgroundColor: 'white'},
+                            imageProps: {resizeMode: 'contain'}
+                         }}
                         rightIcon={
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent:'space-between' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <View style={styles.cantidad}>
-                                    <Icon reverse name='minus' type='material-community' color={Colors.accent} size={normalize(12)} onPress={() => {
-                                        let restar = compras
-                                        restar[index].prod_cantidad = item.prod_cantidad == 1 ? 1 : item.prod_cantidad - 1;
-                                        this.setState({ compras: restar })
-                                    }} />
-                                    <Icon reverse name='plus' type='material-community' color={Colors.primaryButton} size={normalize(12)} onPress={() => {
-                                        let sumar = compras
-                                        sumar[index].prod_cantidad = item.prod_cantidad + 1; 
-                                        this.setState({ compras: sumar })
-                                    }} />
+                                    <Icon
+                                        reverse
+                                        name="minus"
+                                        type="material-community"
+                                        color={Colors.accent}
+                                        size={normalize(12)}
+                                        onPress={() => {
+                                            let restar = compras;
+                                            restar[index].prod_cantidad = item.prod_cantidad == 1 ? 1 : item.prod_cantidad - 1;
+                                            this.setState({compras: restar});
+                                        }}
+                                    />
+                                    <Icon
+                                        reverse
+                                        name="plus"
+                                        type="material-community"
+                                        color={Colors.primaryButton}
+                                        size={normalize(12)}
+                                        onPress={() => {
+                                            let sumar = compras;
+                                            sumar[index].prod_cantidad = item.prod_cantidad + 1;
+                                            this.setState({compras: sumar});
+                                        }}
+                                    />
                                 </View>
-                                <Icon type="material-community" name="trash-can-outline" size={normalize(32)} onPress={async() => {
-                                    await this.eliminarProducto(item)
-                                    this.cargarProductos();
-                                }}/>
+                                <Icon
+                                    type="material-community"
+                                    name="trash-can-outline"
+                                    size={normalize(32)}
+                                    onPress={async () => {
+                                        await this.eliminarProducto(item);
+                                        this.cargarProductos();
+                                    }}
+                                />
                             </View>
                         }
                     />
                 })}
-            </ScrollView> }
-            { compras.length > 0  && this.renderOpciones() }
+                </ScrollView>
+            }
+            {compras.length > 0 && this.renderOpciones() }
             <View style={styles.total}>
-                <Text style={{ fontSize: normalize(25), color:'#fff' }}>TOTAL</Text>
-                <Text style={{ fontSize: normalize(22), color:'#fff' }}>$ {(total).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</Text>
+                <Text style={{fontSize: normalize(25), color: '#fff'}}>TOTAL</Text>
+                <Text style={{fontSize: normalize(22), color: '#fff'}}>$ {total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</Text>
             </View>
         </>
     }
 
     renderOpciones = () => {
-        const { mapVisible, medioPago } = this.state
+        const { mapVisible, medioPago, compras } = this.state
         return <>
             <View style={{ marginVertical: 10 }}>
                 <Input
@@ -112,20 +137,20 @@ class Shop extends Component {
                     rightIconContainerStyle={{ paddingRight: normalize(15) }}
                     rightIcon={
                         <Icon 
-                        type='material-community'
-                        name='map-marker-radius'
-                        color='grey'
-                        size={normalize(25)}
-                        onPress={async()=>{
-                            const permisoLocation = await Permission.askAsync(Permission.LOCATION);
-                            const estadoPermiso = permisoLocation.permissions.location.status;
-                            if(estadoPermiso === "denied"){
-                                Alert.alert("Permiso denegado", "Se deben conceder los permisos necesarios para acceder a la ubucación del dispositivo")
-                            } else {
-                                const loc = await Location.getCurrentPositionAsync({});
-                                this.setState({ mapVisible: !mapVisible, location: loc.coords })
-                            }
-                        }}
+                            type='material-community'
+                            name='map-marker-radius'
+                            color='grey'
+                            size={normalize(25)}
+                            onPress={async()=>{
+                                const permisoLocation = await Permission.askAsync(Permission.LOCATION);
+                                const estadoPermiso = permisoLocation.permissions.location.status;
+                                if(estadoPermiso === "denied"){
+                                    Alert.alert("Permiso denegado", "Se deben conceder los permisos necesarios para acceder a la ubucación del dispositivo")
+                                } else {
+                                    const loc = await Location.getCurrentPositionAsync({});
+                                    this.setState({ mapVisible: !mapVisible, location: loc.coords })
+                                }
+                            }}
                         />
                     }
                 />
@@ -157,11 +182,15 @@ class Shop extends Component {
                     />
                 }
                 onPress={()=>{
-                this.props.navigation.navigate('PayU');
-            }} />
+                    this.props.navigation.navigate('PayU', {
+                        screen: 'PayU',
+                        params: {pedido: compras},
+                      });
+                }} 
+            />
         </>
     }
-
+    
     renderMap = () =>{
         const { mapVisible, location } = this.state
         return <Overlay
@@ -198,7 +227,7 @@ class Shop extends Component {
     }
 }
 
-export default inject("store")(observer(Shop))
+export default inject('store')(observer(Shop));
 
 const styles = StyleSheet.create({
     container:{
