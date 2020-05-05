@@ -21,7 +21,7 @@ export default class payU extends Component {
     
     renderHTML = () => {
         const {compras} = this.state;
-        let html = `<div style="margin: 25px;  border: 1px solid #F39C12; border-radius: 10px">
+        let html = `<div style="margin: 25px; margin-top: 40px;  border: 1px solid #F39C12; border-radius: 10px">
         <div style="display:flex; justify-content: center; align-items:center; height: 150px; background: #F39C12; border-radius: 10px 10px 0 0">
         <h1 style='text-align:center; font-size: 58px; margin: 0; color: #fff'>Tu pedido</h1>
         </div>
@@ -49,7 +49,7 @@ export default class payU extends Component {
         let ApiKey = "4Vj8eK4rloUd272L48hsrarnUA";
         let currency = 'COP';
         let merchantId = "508029";
-        let referenceCode = "TestPayULaCava";
+        let referenceCode = "PayULaCava6";
         let signature = md5.hex_md5(`${ApiKey}~${merchantId}~${referenceCode}~${total}~${currency}`);
 
         html += `</ul> <form method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/">
@@ -62,8 +62,7 @@ export default class payU extends Component {
                 <input name="signature"     type="hidden"  value="${signature}"  >
                 <input name="test"          type="hidden"  value="1" >
                 <input name="buyerEmail"    type="hidden"  value="test@test.com" >
-                <input name="responseUrl"    type="hidden"  value="http://www.test.com/response" >
-                <input name="confirmationUrl"    type="hidden"  value="http://www.test.com/confirmation" >
+                <input name="confirmationUrl"    type="hidden"  value="https://us-central1-lacava-a1dab.cloudfunctions.net/addPagoPayU" >
                 <input name="Submit" style="background: #17A589;
                 width: 100%;
                 height: 130px;

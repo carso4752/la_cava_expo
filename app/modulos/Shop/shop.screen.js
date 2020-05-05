@@ -158,9 +158,8 @@ class Shop extends Component {
                     <Text style={{ marginLeft: 10, fontSize: normalize(18) }}>Medio de pago:</Text>
                     <Picker
                         selectedValue={medioPago}
-                        style={{ height: normalize(20, 'height'), width: normalize (240) }}
+                        style={{ height: normalize(25, 'height'), width: normalize (240) }}
                         onValueChange={(itemValue) => this.setState({ medioPago: itemValue })}
-                        itemStyle={{ color: 'red' }}
                     >
                         <Picker.Item label="Tarjeta" value="credit-card" />
                         <Picker.Item label="Efectivo" value="money" />
