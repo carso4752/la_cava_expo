@@ -15,7 +15,7 @@ class Notificaciones extends Component {
   renderItems = ({item, index}) => {
     fecha = moment(item.ped_fecha.toDate()).format('DD-MM-YYYY h:mm:ss');
     estado = this.estados.find(
-      (e) => e.i == item.ped_estado_paago
+      (e) => e.i == item.ped_estado_pago
     );
     return (
       <Card style={{flex:1}} key={index}>

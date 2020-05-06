@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Picker } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Picker, TextInput } from 'react-native';
 import { ListItem, Icon, Input, Overlay, Button } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import { getShop, setShop } from './shop.utils';
 import Colors from '../../theme/colors';
 import * as Location from 'expo-location';
 import * as Permission from 'expo-permissions';
-import MapView from 'react-native-maps';
-import { Marker } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import { inject, observer } from "mobx-react";
+import { firebaseApp } from '../Database/Firebase'
+import * as firebase from 'firebase';
+import 'firebase/firestore'
 
-const desLatitude = 6.323032;
-const desLongitude = -75.559653;
-const endLocation = `${desLatitude},${desLongitude}`;
-const GOOGLE_API_KEY = 'AIzaSyDksKJmn8PnAW5lXEQm2UZwf8GIkX8QrVQ';
+var db = null
 
 class Shop extends Component {
   
@@ -21,14 +20,60 @@ class Shop extends Component {
         compras: [],
         mapVisible: false,
         location: null,
-        medioPago: "credit-card"
+        marker: null,
+        medioPago: "credit-card",
+        confirmLocation: false,
+        observaciones: null,
+        cargando: false
     }
+    total = 0
 
     componentDidMount(){
         this.cargarProductos();
         const unsubscribe = this.props.navigation.addListener('focus', async () => {
             this.cargarProductos();
         });
+        db = firebase.firestore(firebaseApp);
+    }
+
+    registrarCompra = () => {
+        const { observaciones, compras, marker, medioPago } = this.state
+        let user = firebase.auth().currentUser
+        index = user.providerData.length - 1;
+        let data = {...user.providerData[index]};
+
+        db.collection('tbl_pedidos').add({
+            ped_estado: false,
+            ped_estado_pago: 4,
+            ped_fecha: new Date(),
+            ped_observaciones: observaciones,
+            ped_productos: compras,
+            ped_tipo_pago: medioPago,
+            ped_ubicacion: marker,
+            ped_usuario: data.email,
+            ped_valor: this.total
+
+        }).then((docRef)=>{
+            this.renderLimpiar();
+        }).catch((err)=>{
+            console.error("Error compra", err);
+            this.renderLimpiar();
+        })
+    }
+
+    renderLimpiar = async() =>{
+        const { setShopBadge } = this.props.store
+        this.setState({ compras: [],
+            location: null,
+            marker: null,
+            medioPago: "credit-card",
+            confirmLocation: false,
+            observaciones: null,
+            cargando: false 
+        });
+        await setShop([]);
+        setShopBadge(0)
+        
     }
 
     cargarProductos = async() =>{
@@ -47,7 +92,7 @@ class Shop extends Component {
 
     renderResultados() {
         const {compras} = this.state;
-        let total = 0;
+        this.total = compras.length == 0 ? 0 : 1800;
         return <>
             {compras.length == 0 ? <View style={styles.result}>
                     <View style={{ marginTop: normalize(10, 'height'), marginBottom: normalize(3, 'height') }} >
@@ -61,8 +106,9 @@ class Shop extends Component {
                     <Text style={{textAlign: 'center', fontSize: normalize(18)}}>Agrega productos al carrito</Text>
                 </View> :
                 <ScrollView>
+                <Text style={{ color: 'grey', fontSize: normalize(15), marginTop: normalize(15, 'height'), marginLeft: normalize(15) }}>Domicilio: $1.800</Text>
                 {compras.map((item, index) => {
-                    total = total + item.prod_costo * item.prod_cantidad;
+                    this.total = this.total + item.prod_costo * item.prod_cantidad;
                     let costo = '$' + (item.prod_costo * item.prod_cantidad).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                     return <ListItem
                         key={index}
@@ -122,24 +168,33 @@ class Shop extends Component {
             {compras.length > 0 && this.renderOpciones() }
             <View style={styles.total}>
                 <Text style={{fontSize: normalize(25), color: '#fff'}}>TOTAL</Text>
-                <Text style={{fontSize: normalize(22), color: '#fff'}}>$ {total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</Text>
+                <Text style={{fontSize: normalize(22), color: '#fff'}}>$ {this.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</Text>
             </View>
         </>
     }
 
     renderOpciones = () => {
-        const { mapVisible, medioPago, compras } = this.state
+        const { mapVisible, medioPago, compras, observaciones, confirmLocation } = this.state
+        let pago = null
+        let obs = observaciones ? observaciones.substring(0,35) + '...' : null
+        if (medioPago == "credit-card"){ pago = "PAGAR" }
+        else { pago = "PEDIR" }
         return <>
             <View style={{ marginVertical: 10 }}>
                 <Input
-                    containerStyle={{ marginBottom: normalize(15, 'height') }}
-                    placeholder='Ubicación'
+                    disabled={true}
+                    value={obs}
+                    inputStyle={{ fontSize: normalize(18) }}
+                    containerStyle={{ marginBottom: normalize(10, 'height') }}
+                    inputContainerStyle={{ borderBottomWidth: 0 }}
+                    placeholder={'Ubicación'}
+                    placeholderTextColor={Colors.primaryText}
                     rightIconContainerStyle={{ paddingRight: normalize(15) }}
                     rightIcon={
                         <Icon 
                             type='material-community'
                             name='map-marker-radius'
-                            color='grey'
+                            color={confirmLocation ? Colors.primaryButton : 'grey'}
                             size={normalize(25)}
                             onPress={async()=>{
                                 const permisoLocation = await Permission.askAsync(Permission.LOCATION);
@@ -148,7 +203,11 @@ class Shop extends Component {
                                     Alert.alert("Permiso denegado", "Se deben conceder los permisos necesarios para acceder a la ubucación del dispositivo")
                                 } else {
                                     const loc = await Location.getCurrentPositionAsync({});
-                                    this.setState({ mapVisible: !mapVisible, location: loc.coords })
+                                    let position = {
+                                        "latitude": loc.coords.latitude,
+                                        "longitude": loc.coords.longitude,
+                                    }
+                                    this.setState({ mapVisible: !mapVisible, location: position, marker: position })
                                 }
                             }}
                         />
@@ -170,7 +229,7 @@ class Shop extends Component {
             <Button 
                 buttonStyle={{ backgroundColor: Colors.primaryButton }}
                 titleStyle={{ fontSize: normalize(20) }}
-                title={"PAGAR"}
+                title={pago}
                 icon={
                     <Icon
                         type='font-awesome'
@@ -181,6 +240,7 @@ class Shop extends Component {
                     />
                 }
                 onPress={()=>{
+                    this.registrarCompra();
                     this.props.navigation.navigate('PayU', {
                         screen: 'PayU',
                         params: {pedido: compras},
@@ -189,32 +249,76 @@ class Shop extends Component {
             />
         </>
     }
+
+    onMapPress = (e) => {
+        this.setState({ marker: e.nativeEvent.coordinate });
+    }
     
     renderMap = () =>{
-        const { mapVisible, location } = this.state
+        const { mapVisible, location, marker, observaciones } = this.state
         return <Overlay
             isVisible={mapVisible}
             windowBackgroundColor='rgba(218,218,218, 0.8)'
-            overlayBackgroundColor='transparent'
             overlayStyle={styles.modal}
+            containerStyle={{ borderColor: 'red' }}
             onBackdropPress={() => {
                 this.setState({ mapVisible: !mapVisible })
             }}>
             <View>
+                <Text style={{ textAlign: 'center', color:'grey' }}>LA DIRECCIÓN ES OBTENIDA DESDE UBICACIÓN ACTUAL DEL DISPOSITIVO</Text>
                 { location &&
                     <MapView
+                        ref="map"
                         showsUserLocation
-                        style={styles.map}                    
+                        style={styles.map}
+                        onPress={this.onMapPress.bind(this)}
+                        mapType="standard"
+                        showsTraffic={true}
                         initialRegion={{
                             latitude: location.latitude,
                             longitude: location.longitude,
                             latitudeDelta: 0.002, 
                             longitudeDelta: 0.002
-                        }} 
-                    >                       
+                        }}>
+                        <Marker
+                            coordinate={{
+                                latitude: marker.latitude,
+                                longitude: marker.longitude
+                            }}/>                     
                     </MapView>
                 }
+                <Input
+                    label={'Observaciones:'}
+                    maxLength={100}
+                    multiline={true}
+                    numberOfLines={3}
+                    value={observaciones}
+                    onChangeText={(text) => {
+                        this.setState({ observaciones: text })
+                    }}
+                    inputStyle={{ height: normalize(65, 'height') }}
+                    inputContainerStyle={{ borderBottomWidth: 0 }}
+                />
             </View>
+            <Button 
+                buttonStyle={{ backgroundColor: Colors.primaryButton, marginTop: normalize(20, 'height') }}
+                titleStyle={{ fontSize: normalize(20) }}
+                title={'Confirmar Ubicación'}
+                onPress={()=>{
+                    if(location === marker){
+                        this.setState({ confirmLocation: true, mapVisible: !mapVisible  })
+                    } else {
+                        Alert.alert("Nueva Ubicación",
+                            "¿Esta seguro de recibir su pedido en la nueva ubicación seleccionada?",
+                            [
+                              { text: "Cancelar", onPress: () => this.setState({ marker: location })},
+                              { text: "Si", onPress: () => this.setState({ confirmLocation: true, mapVisible: !mapVisible  }) }
+                            ],
+                            { cancelable: false }
+                          );
+                    }
+                }} 
+            />
         </Overlay>
     }
 
@@ -248,14 +352,14 @@ const styles = StyleSheet.create({
     },
     modal:{
         height:'auto',
-        width: normalize(350),
-        backgroundColor:'#fff',
+        width: normalize(350)        
     },
     cantidad: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
     },
     map:{
-        height: normalize(500, 'height')
+        height: normalize(350, 'height'),
+        marginVertical: normalize(15)
     }
 })

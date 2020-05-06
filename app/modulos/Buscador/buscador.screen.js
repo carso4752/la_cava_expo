@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Alert, ScrollView, Modal, Platform } from 'react-native';
-import { SearchBar, ListItem, Icon, Button, Image, Overlay } from 'react-native-elements';
+import { View, Text, StyleSheet, Alert, ScrollView, Modal, Platform, Dimensions } from 'react-native';
+import { SearchBar, ListItem, Icon, Button, Image } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import Colors from '../../theme/colors';
 import { ActivityIndicator } from 'react-native-paper';
@@ -12,6 +12,7 @@ import 'firebase/firestore'
 import { FireSQL } from 'firesql'
 
 var fireSql = null
+const HeightScreen = Dimensions.get('window').height
 const url_default = 'https://firebasestorage.googleapis.com/v0/b/lacava-a1dab.appspot.com/o/productos%2Fsin_imagen.jpg?alt=media&token=45b98d82-76c2-44a1-a8b4-911acc895e56'
 
 class Buscador extends Component {
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: normalize(15)
     },
     containerModal:{
-        flex: 1, 
+        height: normalize(HeightScreen, 'height'), 
         justifyContent:'flex-end',
         backgroundColor: 'rgba(218,218,218, 0.8)'
     },

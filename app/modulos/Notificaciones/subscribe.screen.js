@@ -23,7 +23,7 @@ class Subscribe extends Component {
       const element = pedidos[index];
       let f = storage.find(
         (e) =>
-          element.id == e.id && element.ped_estado_paago == e.ped_estado_paago
+          element.id == e.id && element.ped_estado_pago == e.ped_estado_pago
       );
       console.log("f", f)
       if (!f) {

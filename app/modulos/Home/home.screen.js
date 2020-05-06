@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {View, StyleSheet, ScrollView, Dimensions} from 'react-native';
 import {Text, Image} from 'react-native-elements';
-import {SliderBox} from 'react-native-image-slider-box';
+import {SliderBox} from '../shared/react-native-image-slider-box';
 import normalize from 'react-native-normalize';
 import * as firebase from 'firebase';
 import TouchableNative from '../shared/touchableNative';

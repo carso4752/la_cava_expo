@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Alert, Dimensions } from 'react-native';
-import { Icon, Avatar, ListItem, Overlay } from 'react-native-elements';
+import { View, Text, StyleSheet, Alert, Dimensions, Linking } from 'react-native';
+import { Icon, Avatar, ListItem, Overlay, SocialIcon } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import * as firebase from 'firebase';
 import * as Permission from 'expo-permissions';
@@ -256,6 +256,34 @@ export default class perfil extends Component{
         </Overlay>
     }
 
+    renderWhatsapp = () =>{
+        let text = "Qué Hay Pa' Hoy ?";
+        let phoneNumber = '+57 3137050608';
+        Linking.openURL(`whatsapp://send?text=${text}&phone=${phoneNumber}`);
+    }
+
+    renderInstagram = () =>{
+        let link = 'https://www.instagram.com/distribuidoralacava/';
+        Linking.canOpenURL(link).then(supported => {
+            if (!supported) {
+                Alert.alert('Instala la aplicación para brindarte una mejor experiencia');
+            } else {
+                return Linking.openURL(link);
+            }
+        }).catch(err => console.error(err));
+    }
+
+    renderFacebook = () =>{
+        let link = 'https://www.facebook.com/DistribuidoraLaCava.co/';
+        Linking.canOpenURL(link).then(supported => {
+            if (!supported) {
+                Alert.alert('Instala la aplicación para brindarte una mejor experiencia');
+            } else {
+                return Linking.openURL(link);
+            }
+        }).catch(err => console.error(err));
+    }
+
     render(){ 
         const { usuario, avatar, reloadUser } = this.state;
         let toast = (DeviceScreen.height < 600 ? 200 : 250);
@@ -320,11 +348,33 @@ export default class perfil extends Component{
                     />
                 ))}
             </View>
-            <View style={styles.cerrarSesion}>
-                <Icon type='material-community' name='power' color='red' size={normalize(45)} onPress={()=>{
-                    firebase.auth().signOut()
-                    this.props.navigation.navigate('Login')
-                }} />
+            <View style={{ flex: 1, flexDirection: 'row' }}>
+                <SocialIcon
+                    type='whatsapp'
+                    iconSize={20}
+                    style={{ backgroundColor: '#36A62B', width: normalize(42), height: normalize(40, 'height'), position:'absolute', top: 10, left: normalize(20) }}
+                    onPress={this.renderWhatsapp}
+                />
+                <SocialIcon
+                    light={true}
+                    type='instagram'
+                    iconSize={20}
+                    iconStyle={{ color: '#E91E63'}}
+                    style={{ width: normalize(42), height: normalize(40, 'height'), position:'absolute', top: 10, left: normalize(70) }}
+                    onPress={this.renderInstagram}
+                />
+                <SocialIcon
+                    type='facebook'
+                    iconSize={20}
+                    style={{ backgroundColor: '#1976D2', width: normalize(42), height: normalize(40, 'height'), position:'absolute', top: 10, left: normalize(120) }}
+                    onPress={this.renderFacebook}
+                />
+                <View style={styles.cerrarSesion}>
+                    <Icon type='material-community' name='power' color='red' size={normalize(45)} onPress={()=>{
+                        firebase.auth().signOut()
+                        this.props.navigation.navigate('Login')
+                    }} />
+                </View>
             </View>
         </>
     }
@@ -345,6 +395,7 @@ const styles = StyleSheet.create({
     },
     cerrarSesion:{
         flex: 1,
+        flexDirection: 'row',
         alignSelf:'flex-end',
         justifyContent: 'flex-end',
         marginBottom: normalize(35, 'height'),
