@@ -15,12 +15,13 @@ import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {navigationRef} from './app/modulos/Navegacion/RootNavigation';
 
-import {Provider} from 'mobx-react';
+import {Provider, inject, observer} from 'mobx-react';
 import store from './app/modulos/Store';
 
 console.disableYellowBox = true;
 Firebase.initializeApp(FirebaseConfig);
 export default class App extends Component {
+  
   render() {
     return (
       <Provider store={store}>

@@ -10,6 +10,12 @@ class Store {
   setNotyBadge = (noty) => {
     this.noty = noty;
   }
+
+  pedidos = null;
+  setPedidos = pedidos => {
+    this.pedidos = pedidos;
+  }
+  
 }
 
 decorate(Store, {
@@ -17,6 +23,8 @@ decorate(Store, {
   setShopBadge: action,
   noty: observable,
   setNotyBadge: action,
+  pedidos: observable,
+  setPedidos: action,
 });
 
 // export class

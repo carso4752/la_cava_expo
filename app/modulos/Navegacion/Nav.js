@@ -13,10 +13,14 @@ import RegistroScreen from '../Registro/registro.screen';
 import LoginScreen from '../Login/login.screen';
 import ShopScreen from '../Shop/shop.screen';
 import PayUScreen from '../Shop/payU.screen';
+import NotificacionesScreen from '../Notificaciones/index.screen'
 import App from '../App/App';
 import {View} from 'react-native';
 import * as RootNavigation from './RootNavigation';
 import WithBadge from './components/badge';
+
+
+import Subscribe from './../Notificaciones/subscribe.screen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -39,10 +43,10 @@ function Carrito({item}) {
             name="bell-outline"
             type="material-community"
             size={normalize(28)}
-            onPress={() => RootNavigation.navigate('Home')}
+            onPress={() => RootNavigation.navigate('Notificaciones')}
           />
         }
-        onPress={() => RootNavigation.navigate('Home')}
+        onPress={() => RootNavigation.navigate('Notificaciones')}
       />
       <WithBadge
         value="s"
@@ -57,6 +61,7 @@ function Carrito({item}) {
         }
         onPress={() => RootNavigation.navigate('Shop')}
       />
+      <Subscribe />
     </View>
   );
 }
@@ -171,6 +176,37 @@ function ShopStack() {
                 type={'material-community'}
                 size={normalize(28)}
                 onPress={() => navigation.navigate('Productos')}
+              />
+            </View>
+          ),
+        })}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function NotificacionesStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="PayU"
+        component={NotificacionesScreen}
+        options={({navigation}) => ({
+          title: 'Notificaciones',
+          headerTitleAlign: 'center',
+          headerLeft: () => (
+            <View
+              style={{
+                marginLeft: normalize(20),
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Icon
+                name={'arrow-left'}
+                type={'material-community'}
+                size={normalize(28)}
+                onPress={() => navigation.navigate('Home')}
               />
             </View>
           ),
@@ -359,6 +395,7 @@ function NavegacionTabs({route, navigation}) {
       />
       <Stack.Screen name="Shop" component={ShopStack} />
       <Stack.Screen name="PayU" component={PayUStack} />
+      <Stack.Screen name="Notificaciones" component={NotificacionesStack} />
     </Stack.Navigator>
   );
 }

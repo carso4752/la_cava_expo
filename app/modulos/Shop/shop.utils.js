@@ -21,3 +21,23 @@ export async function setShop(value) {
         console.log("Error", error)
     }
 }
+
+export async function getPedidos() {
+    try {
+        const value = await AsyncStorage.getItem('Pedidos');
+        if (value !== null) {
+            return JSON.parse(value);
+        }
+        return [];
+    } catch (error) {
+        console.log("Error", error)
+    }
+}
+
+export async function setPedidos(value) {
+    try {
+        await AsyncStorage.setItem('Pedidos', JSON.stringify(value));
+    } catch (error) {
+        console.log("Error", error)
+    }
+}
