@@ -41,9 +41,8 @@ class Productos extends Component {
         }
         const unsubscribe = this.props.navigation.addListener('focus', async () => {
             const { params } = this.props.route
-            console.log("params", params)
             if (params && params.categoria) {
-                await this.setState({ categoria: params.categoria, productos:null })
+                await this.setState({ categoria: params.categoria, productos: null })
             }
             this.cargarProductos();
         });
@@ -289,7 +288,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF'
     },
     containerModal: {
-        height: normalize(HeightScreen, 'height'),
+        flex: 1,
         justifyContent: 'flex-end',
         backgroundColor: 'rgba(218,218,218, 0.8)'
     },

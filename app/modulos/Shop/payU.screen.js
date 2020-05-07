@@ -8,19 +8,21 @@ export default class payU extends Component {
 
     state = {
         compras: [],
-        html: null
+        html: null,
+        referencia: "",
+        email: ""
     }
 
     async componentDidMount() {
         const { params } = this.props.route
-        if (params && params.pedido) {
-            await this.setState({ compras: params.pedido })
+        if (params && params.pedido && params.referencia && params.usuario) {
+            await this.setState({ compras: params.pedido, referencia: params.referencia, email: params.usuario })
             this.renderHTML();
         }
     }
     
     renderHTML = () => {
-        const {compras} = this.state;
+        const { compras, referencia, email } = this.state;
         let html = `<div style="margin: 25px; margin-top: 40px;  border: 1px solid #F39C12; border-radius: 10px">
         <div style="display:flex; justify-content: center; align-items:center; height: 150px; background: #F39C12; border-radius: 10px 10px 0 0">
         <h1 style='text-align:center; font-size: 58px; margin: 0; color: #fff'>Tu pedido</h1>
@@ -28,7 +30,7 @@ export default class payU extends Component {
         <div style="padding: 20px;">
         <ul style='list-style:none'>
         `;
-        let total = 0;
+        let total =  1800;
         for (let index = 0; index < compras.length; index++) {
             const item = compras[index];
             total = total + item.prod_costo * item.prod_cantidad;
@@ -49,19 +51,18 @@ export default class payU extends Component {
         let ApiKey = "4Vj8eK4rloUd272L48hsrarnUA";
         let currency = 'COP';
         let merchantId = "508029";
-        let referenceCode = "PayULaCava6";
-        let signature = md5.hex_md5(`${ApiKey}~${merchantId}~${referenceCode}~${total}~${currency}`);
+        let signature = md5.hex_md5(`${ApiKey}~${merchantId}~${referencia}~${total}~${currency}`);
 
         html += `</ul> <form method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/">
                 <input name="merchantId"    type="hidden"  value="${merchantId}"   >
                 <input name="accountId"     type="hidden"  value="512321" >
-                <input name="description"   type="hidden"  value="Compra productos La Cava"  >
-                <input name="referenceCode" type="hidden"  value="${referenceCode}" >
+                <input name="description"   type="hidden"  value="Compra Productos La Cava"  >
+                <input name="referenceCode" type="hidden"  value="${referencia}" >
                 <input name="amount"        type="hidden"  value="${total}"   >
                 <input name="currency"      type="hidden"  value="${currency}" >
                 <input name="signature"     type="hidden"  value="${signature}"  >
                 <input name="test"          type="hidden"  value="1" >
-                <input name="buyerEmail"    type="hidden"  value="test@test.com" >
+                <input name="buyerEmail"    type="hidden"  value="${email}" >
                 <input name="confirmationUrl"    type="hidden"  value="https://us-central1-lacava-a1dab.cloudfunctions.net/addPagoPayU" >
                 <input name="Submit" style="background: #17A589;
                 width: 100%;

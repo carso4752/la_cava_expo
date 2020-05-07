@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Picker, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Picker, Dimensions } from 'react-native';
 import { ListItem, Icon, Input, Overlay, Button } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import { getShop, setShop } from './shop.utils';
@@ -7,12 +7,14 @@ import Colors from '../../theme/colors';
 import * as Location from 'expo-location';
 import * as Permission from 'expo-permissions';
 import MapView, { Marker } from 'react-native-maps';
+import Toast, {DURATION} from 'react-native-easy-toast';
 import { inject, observer } from "mobx-react";
-import { firebaseApp } from '../Database/Firebase'
+import { firebaseApp } from '../Database/Firebase';
 import * as firebase from 'firebase';
-import 'firebase/firestore'
+import 'firebase/firestore';
 
 var db = null
+const DeviceScreen = Dimensions.get('screen')
 
 class Shop extends Component {
   
@@ -36,6 +38,15 @@ class Shop extends Component {
         db = firebase.firestore(firebaseApp);
     }
 
+    validarDatos = () => {
+        const { marker } = this.state
+        if(marker){
+            this.registrarCompra();
+        } else {
+            this.refs.toastError.show('Por favor confirme su ubicación', 2000);
+        }
+    }
+
     registrarCompra = () => {
         const { observaciones, compras, marker, medioPago } = this.state
         let user = firebase.auth().currentUser
@@ -54,6 +65,14 @@ class Shop extends Component {
             ped_valor: this.total
 
         }).then((docRef)=>{
+            if(medioPago == "credit-card"){
+                this.props.navigation.navigate('PayU', {
+                    screen: 'PayU',
+                    params: {pedido: compras, referencia: docRef.id, usuario: user.email},
+                });
+            } else {
+                this.props.navigation.navigate('Productos')
+            }            
             this.renderLimpiar();
         }).catch((err)=>{
             console.error("Error compra", err);
@@ -174,7 +193,7 @@ class Shop extends Component {
     }
 
     renderOpciones = () => {
-        const { mapVisible, medioPago, compras, observaciones, confirmLocation } = this.state
+        const { mapVisible, medioPago, observaciones, confirmLocation } = this.state
         let pago = null
         let obs = observaciones ? observaciones.substring(0,35) + '...' : null
         if (medioPago == "credit-card"){ pago = "PAGAR" }
@@ -239,17 +258,11 @@ class Shop extends Component {
                         iconStyle={{ marginRight: 5 }}
                     />
                 }
-                onPress={()=>{
-                    this.registrarCompra();
-                    this.props.navigation.navigate('PayU', {
-                        screen: 'PayU',
-                        params: {pedido: compras},
-                      });
-                }} 
+                onPress={this.validarDatos} 
             />
         </>
     }
-
+   
     onMapPress = (e) => {
         this.setState({ marker: e.nativeEvent.coordinate });
     }
@@ -298,8 +311,7 @@ class Shop extends Component {
                     }}
                     inputStyle={{ height: normalize(65, 'height') }}
                     inputContainerStyle={{ borderBottomWidth: 0 }}
-                />
-            </View>
+                />            
             <Button 
                 buttonStyle={{ backgroundColor: Colors.primaryButton, marginTop: normalize(20, 'height') }}
                 titleStyle={{ fontSize: normalize(20) }}
@@ -319,13 +331,23 @@ class Shop extends Component {
                     }
                 }} 
             />
+            </View>
         </Overlay>
     }
 
-    render() {    
+    render() {
+        let toast = (DeviceScreen.height < 600 ? 170 : 220); 
         return <View style={styles.container}>
             {this.renderResultados()}
             {this.renderMap()}
+            <Toast 
+                ref="toastError"
+                style={{backgroundColor:'red'}}
+                position='bottom'
+                positionValue={normalize(toast, 'height')}
+                opacity={0.8}
+                textStyle={{color:'white'}}
+            />
         </View>
     }
 }

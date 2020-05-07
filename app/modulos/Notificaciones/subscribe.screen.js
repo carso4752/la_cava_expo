@@ -17,15 +17,12 @@ class Subscribe extends Component {
     let storage = await getPedidos();
     let cambios = 0;
 
-    console.log(storage, "pedidos")
-
     for (let index = 0; index < pedidos.length; index++) {
       const element = pedidos[index];
       let f = storage.find(
         (e) =>
           element.id == e.id && element.ped_estado_pago == e.ped_estado_pago
       );
-      console.log("f", f)
       if (!f) {
         cambios++;
       }

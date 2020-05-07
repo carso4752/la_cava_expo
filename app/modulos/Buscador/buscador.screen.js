@@ -12,6 +12,7 @@ import 'firebase/firestore'
 import { FireSQL } from 'firesql'
 
 var fireSql = null
+var db = null
 const HeightScreen = Dimensions.get('window').height
 const url_default = 'https://firebasestorage.googleapis.com/v0/b/lacava-a1dab.appspot.com/o/productos%2Fsin_imagen.jpg?alt=media&token=45b98d82-76c2-44a1-a8b4-911acc895e56'
 
@@ -27,7 +28,8 @@ class Buscador extends Component {
     }
 
     async componentDidMount(){
-        fireSql = new FireSQL(firebase.firestore(firebaseApp));
+        db = firebase.firestore(firebaseApp);
+        fireSql = new FireSQL(db);
     }
 
     renderResultados(){
@@ -51,7 +53,20 @@ class Buscador extends Component {
             return <ScrollView>
                 {(resultados).map((item, index) => {
                     let costo = '$' + (item.prod_costo).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-                    let url = item.prod_url ? item.prod_url : url_default;
+                    let url = url_default
+                    if (item.prod_estado) {
+                        if (item.prod_url) {
+                            url = item.prod_url;
+                        } else {
+                            this.urlImagen(item.prod_imagen, index)
+                        }
+                    } else {
+                        if (item.prod_url_agotado) {
+                            url = item.prod_url_agotado;
+                        } else {
+                            this.urlImagen(item.prod_imagen_agotado, index)
+                        }
+                    }
                     return <ListItem
                         key={index}
                         titleStyle={{ fontSize: normalize(15) }}
@@ -68,7 +83,11 @@ class Buscador extends Component {
                             <Icon type="material-community" name="chevron-right" />
                         }
                         onPress={()=>{
-                            this.setState({ modalVisible: !modalVisible, selectProd: item })
+                            if (item.prod_estado) {
+                                this.setState({ modalVisible: !modalVisible, selectProd: item })
+                            } else {
+                                Alert.alert("Producto agotado")
+                            }
                         }}
                         bottomDivider
                     />
@@ -79,6 +98,36 @@ class Buscador extends Component {
                 <Text style={{ textAlign:'center', fontSize: normalize(15) }}>Resultados de la búsqueda</Text>
             </View>
         }
+    }
+
+    urlImagen = (uid, index) => {
+        firebase.storage().ref(`productos/${uid}.png`).getDownloadURL().then(result => {
+            const { resultados } = this.state
+            let item = resultados[index]
+            let id = item.prod_imagen;
+
+            if (item.prod_estado) {
+                item.prod_url = result;
+                item.prod_url_agotado = item.prod_url_agotado ? item.prod_url_agotado : '';
+            } else {
+                item.prod_url = item.prod_url ? item.prod_url : '';
+                item.prod_url_agotado = result;
+            }
+            this.updateData(id, item)
+
+        }).catch((err) => {
+            let { resultados } = this.state
+            console.log("err", err)
+            console.log("uid", uid + resultados[index].prod_nombre)
+        });
+    }
+
+    updateData = (id, item) => {
+        db.doc(`tbl_productos/${id}`).set(item).then(() => {
+            console.log("Actualización correcta", id)
+        }).catch((err) => {
+            console.log("Error Actualización", err)
+        })
     }
 
     renderModal = () => {
@@ -156,6 +205,9 @@ class Buscador extends Component {
                     let textBuscador = text
                     this.setState({ textBuscador })
                 }}
+                onClear={()=>{
+                    this.setState({ resultados: false })
+                }}
                 onSubmitEditing={async()=>{
                     if(textBuscador){
                         this.setState({ cargando: !cargando })
@@ -201,7 +253,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: normalize(15)
     },
     containerModal:{
-        height: normalize(HeightScreen, 'height'), 
+        flex: 1, 
         justifyContent:'flex-end',
         backgroundColor: 'rgba(218,218,218, 0.8)'
     },

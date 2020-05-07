@@ -8,8 +8,6 @@ const db = admin.firestore();
 
 exports.addPagoPayU = functions.https.onRequest((req, res)=>{
     const object = req.body;
-    console.log("OBJECT RESPONSE PAGO:", object )
-
     db.collection('tbl_pagos_online').add({
         transaction_id: object.transaction_id,
         transaction_date: object.transaction_date,
@@ -23,8 +21,8 @@ exports.addPagoPayU = functions.https.onRequest((req, res)=>{
         transaction_cc: object.cc_number,
         transaction_sing: object.sign
     }).then(()=>{
-        res.status(201).end();
+        return res.status(200).end();
     }).catch(()=>{
-        res.status(400).end();
+        return res.status(400).end();
     })
 });

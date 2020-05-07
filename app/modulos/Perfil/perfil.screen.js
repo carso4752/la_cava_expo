@@ -352,7 +352,7 @@ export default class perfil extends Component{
                 <SocialIcon
                     type='whatsapp'
                     iconSize={20}
-                    style={{ backgroundColor: '#36A62B', width: normalize(42), height: normalize(40, 'height'), position:'absolute', top: 10, left: normalize(20) }}
+                    style={{ backgroundColor: '#36A62B', width: normalize(40), height: normalize(40, 'height'), position:'absolute', top: 10, left: normalize(20) }}
                     onPress={this.renderWhatsapp}
                 />
                 <SocialIcon
@@ -360,13 +360,13 @@ export default class perfil extends Component{
                     type='instagram'
                     iconSize={20}
                     iconStyle={{ color: '#E91E63'}}
-                    style={{ width: normalize(42), height: normalize(40, 'height'), position:'absolute', top: 10, left: normalize(70) }}
+                    style={{ width: normalize(40), height: normalize(40, 'height'), position:'absolute', top: 10, left: normalize(70) }}
                     onPress={this.renderInstagram}
                 />
                 <SocialIcon
                     type='facebook'
                     iconSize={20}
-                    style={{ backgroundColor: '#1976D2', width: normalize(42), height: normalize(40, 'height'), position:'absolute', top: 10, left: normalize(120) }}
+                    style={{ backgroundColor: '#1976D2', width: normalize(40), height: normalize(40, 'height'), position:'absolute', top: 10, left: normalize(120) }}
                     onPress={this.renderFacebook}
                 />
                 <View style={styles.cerrarSesion}>
