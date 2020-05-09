@@ -39,8 +39,11 @@ class Shop extends Component {
     }
 
     validarDatos = () => {
-        const { marker } = this.state
+        const { marker, medioPago } = this.state
         if(marker){
+            if( medioPago == "credit-card" && this.total < 12000){
+               return this.refs.toastError.show('El pago mínimo con tarjeta es de $12.000', 2000);
+            }
             this.registrarCompra();
         } else {
             this.refs.toastError.show('Por favor confirme su ubicación', 2000);
@@ -55,7 +58,7 @@ class Shop extends Component {
 
         db.collection('tbl_pedidos').add({
             ped_estado: false,
-            ped_estado_pago: 4,
+            ped_estado_pago: 1,
             ped_fecha: new Date(),
             ped_observaciones: observaciones,
             ped_productos: compras,
@@ -72,8 +75,8 @@ class Shop extends Component {
                 });
             } else {
                 this.props.navigation.navigate('Productos')
+                this.renderLimpiar();
             }            
-            this.renderLimpiar();
         }).catch((err)=>{
             console.error("Error compra", err);
             this.renderLimpiar();
@@ -196,8 +199,8 @@ class Shop extends Component {
         const { mapVisible, medioPago, observaciones, confirmLocation } = this.state
         let pago = null
         let obs = observaciones ? observaciones.substring(0,35) + '...' : null
-        if (medioPago == "credit-card"){ pago = "PAGAR" }
-        else { pago = "PEDIR" }
+        if (medioPago == "credit-card"){ pago = "PAGAR EN LINEA" }
+        else { pago = "SOLICITAR PEDIDO" }
         return <>
             <View style={{ marginVertical: 10 }}>
                 <Input
@@ -206,7 +209,7 @@ class Shop extends Component {
                     inputStyle={{ fontSize: normalize(18) }}
                     containerStyle={{ marginBottom: normalize(10, 'height') }}
                     inputContainerStyle={{ borderBottomWidth: 0 }}
-                    placeholder={'Ubicación'}
+                    placeholder={confirmLocation ? 'Ubicación confirmada' : 'Ubicación'}
                     placeholderTextColor={Colors.primaryText}
                     rightIconContainerStyle={{ paddingRight: normalize(15) }}
                     rightIcon={
@@ -336,7 +339,7 @@ class Shop extends Component {
     }
 
     render() {
-        let toast = (DeviceScreen.height < 600 ? 170 : 220); 
+        let toast = (DeviceScreen.height < 600 ? 250 : 300); 
         return <View style={styles.container}>
             {this.renderResultados()}
             {this.renderMap()}

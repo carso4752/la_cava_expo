@@ -1,86 +1,83 @@
 import React, {Component} from 'react';
-import {View} from 'react-native';
 import {inject, observer} from 'mobx-react';
-
 import {setPedidos, getPedidos} from './../Shop/shop.utils';
-
 import {firebaseApp} from './../Database/Firebase';
 import * as Firebase from 'firebase';
 import 'firebase/firestore';
 
 class Subscribe extends Component {
-  realtime = null;
+  realtime = null; 
 
-  validarNoty = async (pedidos) => {
-
-    let {setNotyBadge} = this.props.store;
-    let storage = await getPedidos();
-    let cambios = 0;
-
-    for (let index = 0; index < pedidos.length; index++) {
-      const element = pedidos[index];
-      let f = storage.find(
-        (e) =>
-          element.id == e.id && element.ped_estado_pago == e.ped_estado_pago
-      );
-      if (!f) {
-        cambios++;
-      }
+    componentDidMount() {
+        let user = Firebase.auth().currentUser;
+        if (user != null && user.providerData != null) {
+            let email = user.providerData[user.providerData.length - 1].email;
+            this.renderPedidos(email);
+        }
     }
 
-    setNotyBadge(cambios);
-    setPedidos(pedidos);
-  };
+    renderPedidos = (email) =>{
+        let {setPedidos: setP} = this.props.store;
+        db = Firebase.firestore(firebaseApp);
+        var pedidos = [];
 
-  componentDidMount() {
-    let {setPedidos: setP} = this.props.store;
-    let user = Firebase.auth().currentUser;
+        if (email == "car.yho.ys@gmail.com") {
+          this.realtime = db
+          .collection('tbl_pedidos')
+          .orderBy('ped_fecha', 'desc')
+          .onSnapshot((querySnapshot) => {
+            
+            querySnapshot.forEach(function (doc) {
+                let data = doc.data();
+                pedidos.push({...data, id: doc.id});
+            });
 
-    if (user != null && user.providerData != null) {
-      let email = user.providerData[user.providerData.length - 1].email;
-
-      db = Firebase.firestore(firebaseApp);
-
-      if(email == "admin"){
-        this.realtime = db
-        .collection('tbl_pedidos')
-        .onSnapshot((querySnapshot) => {
-          var pedidos = [];
-          querySnapshot.forEach(function (doc) {
-            let data = doc.data();
-            pedidos.push({...data, id: doc.id});
+            setP(pedidos);
+            this.validarNoty(pedidos);
           });
+        } 
+        else {
+          const Ref = db.collection('tbl_pedidos')
+          this.realtime = Ref.orderBy('ped_fecha', 'desc').onSnapshot((querySnapshot) => {
+            querySnapshot.forEach(function (doc) {
+                let data = doc.data();
+                pedidos.push({...data, id: doc.id});
+            });
 
-          setP(pedidos);
-          this.validarNoty(pedidos);
-        });
-      }else{
-        this.realtime = db
-        .collection('tbl_pedidos')
-        .where('ped_usuario', '==', email)
-        .onSnapshot((querySnapshot) => {
-          var pedidos = [];
-          querySnapshot.forEach(function (doc) {
-            let data = doc.data();
-            pedidos.push({...data, id: doc.id});
+            setP(pedidos);
+            this.validarNoty(pedidos);
           });
+        }
+    }
 
-          setP(pedidos);
-          this.validarNoty(pedidos);
-        });
+    validarNoty = async (pedidos) => {
+      let { setNotyBadge } = this.props.store;
+      let storage = await getPedidos();
+      let cambios = 0;
+
+      for (let index = 0; index < pedidos.length; index++) {
+        const element = pedidos[index];
+        let f = storage.find(
+          (e) =>
+            element.id == e.id && element.ped_estado_pago == e.ped_estado_pago
+        );
+        if (!f) {
+          cambios++;
+        }
       }
-    }
-  }
 
-  componentWillUnmount() {
-    if (this.realtime) {
-      this.realtime();
-    }
-  }
+      setNotyBadge(cambios);
+    };
 
-  render() {
-    return <></>;
-  }
+    componentWillUnmount() {
+        if (this.realtime) {
+          this.realtime();
+        }
+    }
+
+    render() {
+      return <></>;
+    }
 }
 
 export default inject('store')(observer(Subscribe));

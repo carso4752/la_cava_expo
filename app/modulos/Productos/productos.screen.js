@@ -70,7 +70,7 @@ class Productos extends Component {
                         }} />
                     </View>}
                     <View style={{ alignItems: 'center', marginBottom: normalize(15, 'height') }}>
-                        <Image placeholderStyle={{ backgroundColor: 'white' }} style={styles.imageModal} resizeMode='stretch' source={{ uri: prod_url }} PlaceholderContent={<ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />} />
+                        <Image placeholderStyle={{ backgroundColor: 'white' }} style={styles.imageModal} resizeMode='contain' source={{ uri: prod_url }} />
                         <Text style={{ fontSize: normalize(15), textAlign: 'center', marginHorizontal: normalize(25), marginTop: normalize(5, 'height') }}>{prod_nombre}</Text>
                     </View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: normalize(15, 'height') }}>
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     },
     imageModal: {
         width: normalize(160),
-        height: normalize(130, 'height')
+        height: normalize(130, 'height'),
     },
     container: {
         flex: 1,

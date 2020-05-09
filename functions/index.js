@@ -8,10 +8,9 @@ const db = admin.firestore();
 
 exports.addPagoPayU = functions.https.onRequest((req, res) => {
   const object = req.body;
+  console.log("Object response", object)
   let id = object.reference_sale;
-  let estado =
-    object.state_pol == 5 || object.state_pol == 6 ? 3 : object.state_pol;
-
+  let estado = object.state_pol == 5 || object.state_pol == 6 ? 5 : object.state_pol;
   db.collection('tbl_pagos_online')
     .where('transaction_reference', '==', id)
     .get()
@@ -22,8 +21,9 @@ exports.addPagoPayU = functions.https.onRequest((req, res) => {
       });
 
       if (encontro) {
-        db.collection('tbl_pedidos').doc(id).update({ped_estado_pago: estado});
-        return res.status(200).end();
+        db.collection('tbl_pedidos').doc(id).update({ped_estado_pago: estado}).then(()=>{
+          return res.status(200).end();
+        });
       } else {
         db.collection('tbl_pedidos').doc(id).update({ped_estado_pago: estado});
         db.collection('tbl_pagos_online')
