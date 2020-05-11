@@ -5,79 +5,82 @@ import {firebaseApp} from './../Database/Firebase';
 import * as Firebase from 'firebase';
 import 'firebase/firestore';
 
+import {getRol} from './../Shop/shop.utils';
+
 class Subscribe extends Component {
-  realtime = null; 
+  realtime = null;
 
-    componentDidMount() {
-        let user = Firebase.auth().currentUser;
-        if (user != null && user.providerData != null) {
-            let email = user.providerData[user.providerData.length - 1].email;
-            this.renderPedidos(email);
-        }
+  componentDidMount() {
+    let user = Firebase.auth().currentUser;
+    if (user != null && user.providerData != null) {
+      getRol().then((id) => {
+        this.renderPedidos(id);
+      });
     }
+  }
 
-    renderPedidos = (email) =>{
-        let {setPedidos: setP} = this.props.store;
-        db = Firebase.firestore(firebaseApp);
-        var pedidos = [];
+  renderPedidos = (id) => {
+    let {setPedidos: setP} = this.props.store;
+    db = Firebase.firestore(firebaseApp);
+    var pedidos = [];
 
-        if (email == "car.yho.ys@gmail.com") {
-          this.realtime = db
-          .collection('tbl_pedidos')
-          .orderBy('ped_fecha', 'desc')
-          .onSnapshot((querySnapshot) => {
-            
-            querySnapshot.forEach(function (doc) {
-                let data = doc.data();
-                pedidos.push({...data, id: doc.id});
-            });
-
-            setP(pedidos);
-            this.validarNoty(pedidos);
+    if (id == '1') {
+      this.realtime = db
+        .collection('tbl_pedidos')
+        .orderBy('ped_fecha', 'desc')
+        .onSnapshot((querySnapshot) => {
+          querySnapshot.forEach(function (doc) {
+            let data = doc.data();
+            pedidos.push({...data, id: doc.id});
           });
-        } 
-        else {
-          const Ref = db.collection('tbl_pedidos')
-          this.realtime = Ref.orderBy('ped_fecha', 'desc').onSnapshot((querySnapshot) => {
-            querySnapshot.forEach(function (doc) {
-                let data = doc.data();
-                pedidos.push({...data, id: doc.id});
-            });
 
-            setP(pedidos);
-            this.validarNoty(pedidos);
+          setP(pedidos);
+          this.validarNoty(pedidos);
+        });
+    } else {
+      const Ref = db.collection('tbl_pedidos');
+      this.realtime = Ref.orderBy('ped_fecha', 'desc').onSnapshot(
+        (querySnapshot) => {
+          querySnapshot.forEach(function (doc) {
+            let data = doc.data();
+            pedidos.push({...data, id: doc.id});
           });
+
+          setP(pedidos);
+          this.validarNoty(pedidos);
         }
+      );
     }
+  };
 
-    validarNoty = async (pedidos) => {
-      let { setNotyBadge } = this.props.store;
-      let storage = await getPedidos();
-      let cambios = 0;
+  validarNoty = async (pedidos) => {
+    let {setNotyBadge} = this.props.store;
+    let storage = await getPedidos();
+    let cambios = 0;
 
-      for (let index = 0; index < pedidos.length; index++) {
-        const element = pedidos[index];
-        let f = storage.find(
-          (e) =>
-            element.id == e.id && element.ped_estado_pago == e.ped_estado_pago
-        );
-        if (!f) {
-          cambios++;
-        }
+    for (let index = 0; index < pedidos.length; index++) {
+      const element = pedidos[index];
+      let f = storage.find(
+        (e) =>
+          element.id == e.id && element.ped_estado_pago == e.ped_estado_pago
+      );
+      if (!f) {
+        cambios++;
       }
-
-      setNotyBadge(cambios);
-    };
-
-    componentWillUnmount() {
-        if (this.realtime) {
-          this.realtime();
-        }
     }
 
-    render() {
-      return <></>;
+    setNotyBadge(cambios);
+  };
+
+  componentWillUnmount() {
+    if (this.realtime) {
+      this.realtime();
     }
+  }
+
+  render() {
+    return <></>;
+  }
 }
 
 export default inject('store')(observer(Subscribe));

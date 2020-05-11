@@ -5,7 +5,6 @@
  * @format
  * @flow
  */
-
 import React, {Component} from 'react';
 import {StyleSheet, View, StatusBar} from 'react-native';
 import FirebaseConfig from './app/modulos/Database/Firebase';

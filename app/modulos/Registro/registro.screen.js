@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { View, StyleSheet, StatusBar, Dimensions } from 'react-native';
 import { Button, Image, Input, Icon } from 'react-native-elements';
 import Colors from '../../theme/colors';
+import { firebaseApp } from '../Database/Firebase';
 import * as Firebase from 'firebase';
+import 'firebase/firestore';
 import Toast, {DURATION} from 'react-native-easy-toast';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import normalize from 'react-native-normalize';
@@ -11,6 +13,8 @@ import { ActivityIndicator } from 'react-native-paper'
 const DeviceScreen = Dimensions.get('screen')
 
 export default class Registro extends Component {
+
+    db = null;
 
     constructor(){
         super();
@@ -25,6 +29,8 @@ export default class Registro extends Component {
             hidePassword: true,
             registro: false
         }
+
+        this.db = Firebase.firestore(firebaseApp);
     }
 
     _renderRegistro = async() => {
@@ -42,6 +48,9 @@ export default class Registro extends Component {
         } else if(password == confirmPassword){
             await this.setState({ registro: !registro })
             Firebase.auth().createUserWithEmailAndPassword(email, password).then(result => {
+                this.db.collection("tbl_usuario_rol").doc(result.user.uid).set({
+                    id_rol: 2
+                })
                 this.refs.toast.show('Registro Exitoso', 500, () =>{
                     this.setState({ registro: false })
                     this.props.navigation.navigate('Login')
