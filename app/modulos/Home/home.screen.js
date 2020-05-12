@@ -102,7 +102,7 @@ class Home extends Component {
               <Image
                 source={require('../../assets/categorias/AGUARDIENTE.png')}
                 style={{width: ancho, height: normalize(90, 'height')}}
-                resizeMode="center"
+                resizeMode="stretch"
               />
             </TouchableNative>
             <TouchableNative
@@ -116,7 +116,7 @@ class Home extends Component {
               <Image
                 source={require('../../assets/categorias/CERVEZA.png')}
                 style={{width: ancho, height: normalize(90, 'height')}}
-                resizeMode="center"
+                resizeMode="stretch"
               />
             </TouchableNative>
           </View>
@@ -132,7 +132,7 @@ class Home extends Component {
               <Image
                 source={require('../../assets/categorias/RON.png')}
                 style={{width: ancho, height: normalize(90, 'height')}}
-                resizeMode="center"
+                resizeMode="stretch"
               />
             </TouchableNative>
             <TouchableNative
@@ -146,7 +146,7 @@ class Home extends Component {
               <Image
                 source={require('../../assets/categorias/TEQUILA.png')}
                 style={{width: ancho, height: normalize(90, 'height')}}
-                resizeMode="center"
+                resizeMode="stretch"
               />
             </TouchableNative>
           </View>
@@ -162,7 +162,7 @@ class Home extends Component {
               <Image
                 source={require('../../assets/categorias/WHISKY.png')}
                 style={{width: ancho, height: normalize(90, 'height')}}
-                resizeMode="center"
+                resizeMode="stretch"
               />
             </TouchableNative>
             <TouchableNative
@@ -176,7 +176,7 @@ class Home extends Component {
               <Image
                 source={require('../../assets/categorias/VODKA.png')}
                 style={{width: ancho, height: normalize(90, 'height')}}
-                resizeMode="center"
+                resizeMode="stretch"
               />
             </TouchableNative>
           </View>
@@ -192,7 +192,7 @@ class Home extends Component {
               <Image
                 source={require('../../assets/categorias/VINO.png')}
                 style={{width: ancho, height: normalize(90, 'height')}}
-                resizeMode="center"
+                resizeMode="stretch"
               />
             </TouchableNative>
             <TouchableNative
@@ -206,7 +206,7 @@ class Home extends Component {
               <Image
                 source={require('../../assets/categorias/OTROS.png')}
                 style={{width: ancho, height: normalize(90, 'height')}}
-                resizeMode="center"
+                resizeMode="stretch"
               />
             </TouchableNative>
           </View>

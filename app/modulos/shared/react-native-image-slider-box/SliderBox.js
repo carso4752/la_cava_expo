@@ -58,6 +58,7 @@ export class SliderBox extends Component {
         <ImageComponent
           style={{ width: null, height: this.props.sliderBoxHeight || 200 }}
           source={{ uri: item }}
+          resizeMode={'stretch'}
         />
       </TouchableWithoutFeedback>
     );
