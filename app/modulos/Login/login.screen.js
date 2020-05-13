@@ -40,13 +40,15 @@ export default class Login extends Component {
   };
 
   validarLogin() {
-    Firebase.auth().onAuthStateChanged((user) => {
-      let login = user ? true : false;
-      if (login) {
-        this.consultarRol(user.uid);
-      }
-      this.setState({login});
-    });
+    let user = Firebase.auth().currentUser;
+    if (user) {
+      index = user.providerData.length - 1;
+      let data = {...user.providerData[index]};
+      this.consultarRol(data.uid);
+      this.setState({login:true});
+    } else {
+      this.setState({login: false});
+    }
   }
 
   async _renderIngreso() {
@@ -69,7 +71,7 @@ export default class Login extends Component {
       Firebase.auth()
         .signInWithEmailAndPassword(email, password)
         .then((result) => {
-          consultarRol(result.user.uid);
+          this.consultarRol(result.user.uid);
           this.refs.toast.show('Login Exitoso', 500, () => {
             this.setState({ingreso: false});
             this.props.navigation.navigate('App');
