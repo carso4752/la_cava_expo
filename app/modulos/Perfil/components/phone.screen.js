@@ -26,14 +26,13 @@ class Phone extends Component {
     SendCode = async () => {
         const { usuario } = this.state;
         const phoneProvider = new firebase.auth.PhoneAuthProvider();
-        const verificationId = await phoneProvider.verifyPhoneNumber(
+        await phoneProvider.verifyPhoneNumber(
             "+57" + usuario.phoneNumber,
             this.recaptchaVerifier
-        ).then(()=>{
+        ).then((verificationId)=>{
             this.setState({ verificationId, confirm: true });
         }).catch((err)=>{
-            console.log("err", err)
-            this.props.guardar(usuario, null, verificationId, err)
+            this.props.guardar(err)
         });
     };
 
@@ -94,7 +93,7 @@ class Phone extends Component {
                 onPress={async() => {
                     if(confirm){
                         if(verificationCode){
-                            this.props.guardar(usuario, verificationCode, verificationId)
+                            this.props.guardar(null, usuario, verificationCode, verificationId)
                         }
                     } else {
                         if(usuario.phoneNumber){

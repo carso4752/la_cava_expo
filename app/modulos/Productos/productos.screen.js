@@ -30,12 +30,15 @@ class Productos extends Component {
             selectProd: [],
             cantidad: 1,
             categoria: null,
-            refreshing: false
+            refreshing: false,
+            id: null
         }
     }
 
     async componentDidMount() {
         const { params } = this.props.route
+        let user = firebase.auth().currentUser;
+        await this.setState({ id: user.uid })
         if (params && params.categoria) {
             await this.setState({ categoria: params.categoria })
         }
@@ -45,8 +48,8 @@ class Productos extends Component {
                 await this.setState({ categoria: params.categoria, productos: null })
             }
             this.cargarProductos();
-        });
-
+        });    
+            
         db = firebase.firestore(firebaseApp);
         this.cargarProductos();
     }
@@ -213,7 +216,8 @@ class Productos extends Component {
 
     agregarCarrito = async (item, cantidad) => {
         const { setShopBadge } = this.props.store;
-        let data = await getShop();
+        const { id } = this.state
+        let data = await getShop(id);
         let encontro = data.find(e => e.prod_imagen == item.prod_imagen)
         if (encontro) {
             let index = data.findIndex(e => e.prod_imagen == item.prod_imagen)
@@ -223,7 +227,7 @@ class Productos extends Component {
             item.prod_cantidad = cantidad
             data.push(item)
         }
-        await setShop(data);
+        await setShop(id, data);
         setShopBadge(data.length);
     }
 

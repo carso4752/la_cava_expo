@@ -24,10 +24,14 @@ class Buscador extends Component {
         resultados: false,
         modalVisible: false,
         cantidad: 1,
-        selectProd: []
+        selectProd: [],
+        id: null
     }
 
     async componentDidMount(){
+        let user = firebase.auth().currentUser;
+        await this.setState({ id: user.uid })
+        
         db = firebase.firestore(firebaseApp);
         fireSql = new FireSQL(db);
     }
@@ -175,7 +179,8 @@ class Buscador extends Component {
 
     agregarCarrito = async(item, cantidad) =>{
         const { setShopBadge } = this.props.store
-        let data = await getShop();
+        const { id } = this.state
+        let data = await getShop(id);
         let encontro = data.find(e => e.prod_imagen == item.prod_imagen)
         if(encontro){
             let index = data.findIndex(e => e.prod_imagen == item.prod_imagen)
@@ -185,7 +190,8 @@ class Buscador extends Component {
             item.prod_cantidad = cantidad
             data.push(item)
         }
-        await setShop(data);
+
+        await setShop(id, data);
         setShopBadge(data.length)
     }
 

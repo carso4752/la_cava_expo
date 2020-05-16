@@ -17,13 +17,14 @@ class Home extends Component {
     super();
 
     this.state = {
-      banners: [],
+        banners: [],
     };
   }
 
   componentDidMount() {
     const {setShopBadge} = this.props.store;
-    getShop().then((data) => {
+    let user = firebase.auth().currentUser;
+    getShop(user.uid).then((data) => {
         setShopBadge(data.length);
     });
     firebase

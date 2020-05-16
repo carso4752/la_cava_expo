@@ -26,11 +26,20 @@ class Shop extends Component {
         medioPago: "credit-card",
         confirmLocation: false,
         observaciones: null,
-        cargando: false
+        cargando: false,
+        usuario: null,
+        id: null
     }
     total = 0
 
-    componentDidMount(){
+    async componentDidMount(){
+        let user = firebase.auth().currentUser;
+        index = user.providerData.length - 1;
+        if(user){
+            let data = {...user.providerData[index]};
+            data.phoneNumber = user.phoneNumber
+            await this.setState({ usuario: {...data}, id: user.uid })
+        }
         this.cargarProductos();
         const unsubscribe = this.props.navigation.addListener('focus', async () => {
             this.cargarProductos();
@@ -39,39 +48,38 @@ class Shop extends Component {
     }
 
     validarDatos = () => {
-        const { marker, medioPago } = this.state
-        if(marker){
-            if( medioPago == "credit-card" && this.total < 12000){
-               return this.refs.toastError.show('El pago mínimo con tarjeta es de $12.000', 2000);
-            }
-            this.registrarCompra();
-        } else {
+        const { marker, medioPago, usuario } = this.state
+        if(!usuario.phoneNumber || !usuario.displayName ){
+            this.refs.toastError.show('Agrega un número celular en el perfil', 2000);
+        } else if(!marker){
             this.refs.toastError.show('Por favor confirme su ubicación', 2000);
+        } else if( medioPago == "credit-card" && this.total < 12000){
+            this.refs.toastError.show('El pago mínimo con tarjeta es de $12.000', 2000);
+        } else {
+            this.registrarCompra();
         }
     }
 
     registrarCompra = () => {
-        const { observaciones, compras, marker, medioPago } = this.state
-        let user = firebase.auth().currentUser
-        index = user.providerData.length - 1;
-        let data = {...user.providerData[index]};
+        const { observaciones, compras, marker, medioPago, usuario } = this.state
 
         db.collection('tbl_pedidos').add({
-            ped_estado: false,
             ped_estado_pago: 1,
             ped_fecha: new Date(),
-            ped_observaciones: observaciones,
+            ped_observaciones_cliente: observaciones,
             ped_productos: compras,
             ped_tipo_pago: medioPago,
             ped_ubicacion: marker,
-            ped_usuario: data.email,
+            ped_usuario: usuario.displayName,
+            ped_email: usuario.email,
+            ped_telefono: usuario.phoneNumber,
             ped_valor: this.total
 
         }).then((docRef)=>{
             if(medioPago == "credit-card"){
                 this.props.navigation.navigate('PayU', {
                     screen: 'PayU',
-                    params: {pedido: compras, referencia: docRef.id, usuario: user.email},
+                    params: {pedido: compras, referencia: docRef.id, usuario: data.email},
                 });
             } else {
                 this.props.navigation.navigate('Productos')
@@ -85,6 +93,7 @@ class Shop extends Component {
 
     renderLimpiar = async() =>{
         const { setShopBadge } = this.props.store
+        const { id } = this.state
         this.setState({ compras: [],
             location: null,
             marker: null,
@@ -93,22 +102,24 @@ class Shop extends Component {
             observaciones: null,
             cargando: false 
         });
-        await setShop([]);
+        await setShop(id, []);
         setShopBadge(0)
         
     }
 
     cargarProductos = async() =>{
-        const items = await getShop();
+        const { id } = this.state
+        const items = await getShop(id);
         this.setState({ compras: items })
     }
 
     eliminarProducto = async(item) =>{
         const { setShopBadge } = this.props.store
-        var data = await getShop();
+        const { id } = this.state
+        var data = await getShop(id);
         let index = data.findIndex(e => e.prod_imagen == item.prod_imagen)
         data.splice(index, 1)
-        await setShop(data);
+        await setShop(id, data);
         setShopBadge(data.length)
     }
 

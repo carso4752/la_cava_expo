@@ -53,7 +53,7 @@ export default class Registro extends Component {
                 })
                 this.refs.toast.show('Registro Exitoso', 500, () =>{
                     this.setState({ registro: false })
-                    this.props.navigation.navigate('Login')
+                    this.props.navigation.navigate('Perfil')
                 });
             }).catch(err => {
                 console.log("Error en el Registro", err)

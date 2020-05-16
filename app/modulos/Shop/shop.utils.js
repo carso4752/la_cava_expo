@@ -1,8 +1,8 @@
 import {AsyncStorage} from 'react-native';
 
-export async function getShop() {
+export async function getShop(uid) {
   try {
-    const value = await AsyncStorage.getItem('Item');
+    const value = await AsyncStorage.getItem(uid);
     if (value !== null) {
       return JSON.parse(value);
     }
@@ -12,9 +12,9 @@ export async function getShop() {
   }
 }
 
-export async function setShop(value) {
+export async function setShop(uid, value) {
   try {
-    await AsyncStorage.setItem('Item', JSON.stringify(value));
+    await AsyncStorage.setItem(uid, JSON.stringify(value));
   } catch (error) {
     console.log('Error', error);
   }

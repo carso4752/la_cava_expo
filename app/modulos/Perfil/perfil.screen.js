@@ -31,7 +31,7 @@ export default class perfil extends Component{
         }
     }
     
-    vistaComponente = null
+    vistaComponente = <View />
     menuOptions = [
         {
           title: "Cambiar nombre de usuario",
@@ -131,27 +131,26 @@ export default class perfil extends Component{
 
     updateComponentName = (data) => {
         const { usuario } = this.state
-        this.setState({ modalVisible: false })
 
         if(!data.displayName || usuario.displayName == data.displayName){
             this.refs.toastError.show('El nombre no puede ser el mismo o estar vacío', 2000);
         } else {
             firebase.auth().currentUser.updateProfile(data)
             .then(async()=>{
-                await this.setState({ usuario: data });
-                this.refs.toast.show('Nombre de usuario actualizado correctamente', 2000);
+                await this.setState({ usuario: data, modalVisible: false });
+                return this.refs.toast.show('Nombre de usuario actualizado correctamente', 2000);
             }).catch(()=>{
                 this.refs.toastError.show('Error al actualizar la información', 1500);
             })
         }
+        this.setState({ modalVisible: false })
     }
 
     updateComponentEmail = (data, password) => {
         const { usuario } = this.state
-        this.setState({ modalVisible: false })
 
         let mailformat = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
-
+        
         if(!mailformat.test(data.email)){
             this.refs.toastError.show('Correo electrónico invalido', 1500);
         }
@@ -164,8 +163,8 @@ export default class perfil extends Component{
             user.reauthenticateWithCredential(credenciales).then(()=>{
                 firebase.auth().currentUser.updateEmail(data.email)
                 .then(async()=>{
-                    await this.setState({ usuario: data });
-                    this.refs.toast.show('Correo electrónico actualizado correctamente', 2000);
+                    await this.setState({ usuario: data, modalVisible: false });
+                    return this.refs.toast.show('Correo electrónico actualizado correctamente', 2000);
                 }).catch(()=>{
                     this.refs.toastError.show('Error al actualizar la información', 1500);
                 })
@@ -173,12 +172,12 @@ export default class perfil extends Component{
                 this.refs.toastError.show('Contraseña incorrecta', 1500);
             })
         }
+        this.setState({ modalVisible: false })
     }
 
-    updateComponentPhone = (data, verificationCode, verificationId, err) => {
+    updateComponentPhone = (err, data, verificationCode, verificationId) => {
         const { usuario } = this.state
-        this.setState({ modalVisible: false })
-        
+
         if(err){
             this.refs.toastError.show('No fue posible generar un código para el número celular ingresado', 4000);
         }
@@ -187,18 +186,18 @@ export default class perfil extends Component{
         } else {
             let user = firebase.auth().currentUser
             let credenciales = firebase.auth.PhoneAuthProvider.credential(verificationId,verificationCode);
-            
+
             user.updatePhoneNumber(credenciales).then(async()=>{
-                await this.setState({ usuario: data });
-                this.refs.toast.show('Celular actualizado correctamente', 2000);
+                await this.setState({ usuario: data, modalVisible: false });
+                return this.refs.toast.show('Celular actualizado correctamente', 2000);
             }).catch(()=>{
                 this.refs.toastError.show('Código no valido', 1500);
             })
         }
+        this.setState({ modalVisible: false })
     }
 
     updateComponentPassword = (password, passwordNew, passwordConfirm) => {
-        this.setState({ modalVisible: false })
 
         if(passwordNew.length < 6 || passwordConfirm.length < 6){
             this.refs.toastError.show('La contraseña debe contener minimo 6 caracteres', 1500);
@@ -211,7 +210,8 @@ export default class perfil extends Component{
             user.reauthenticateWithCredential(credenciales).then(()=>{
                 firebase.auth().currentUser.updatePassword(passwordNew)
                 .then(async()=>{
-                    this.refs.toast.show('Contraseña actualizada correctamente', 2000);
+                    await this.setState({ modalVisible: false })
+                    return this.refs.toast.show('Contraseña actualizada correctamente', 2000);
                 }).catch(()=>{
                     this.refs.toastError.show('Error al actualizar la información', 1500);
                 })
@@ -221,6 +221,7 @@ export default class perfil extends Component{
         } else{
             this.refs.toastError.show('Las contraseñas no coinciden', 1500);
         }
+        this.setState({ modalVisible: false })
     }
 
     selectedComponent(key){ 
@@ -257,9 +258,16 @@ export default class perfil extends Component{
     }
 
     renderWhatsapp = () =>{
-        let text = "Qué Hay Pa' Hoy ?";
+        let text = "Qué Tal Unas Cervezas Pa' Hoy ?";
         let phoneNumber = '+57 3137050608';
-        Linking.openURL(`whatsapp://send?text=${text}&phone=${phoneNumber}`);
+        let link = `whatsapp://send?text=${text}&phone=${phoneNumber}`;
+        Linking.canOpenURL(link).then(supported => {
+            if (!supported) {
+                Alert.alert('Instala la aplicación para brindarte una mejor experiencia');
+            } else {
+                return Linking.openURL(link);
+            }
+        }).catch(err => console.error(err));
     }
 
     renderInstagram = () =>{
@@ -286,7 +294,7 @@ export default class perfil extends Component{
 
     render(){ 
         const { usuario, avatar, reloadUser } = this.state;
-        let toast = (DeviceScreen.height < 600 ? 200 : 250);
+        let toast = (DeviceScreen.height < 600 ? 100 : 150);
         if(reloadUser){
             return <View style={{ flex: 1, justifyContent:'center' }}>
                 <ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />

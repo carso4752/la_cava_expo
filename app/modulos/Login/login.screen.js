@@ -40,20 +40,18 @@ export default class Login extends Component {
   };
 
   validarLogin() {
-    let user = Firebase.auth().currentUser;
-    if (user) {
-      index = user.providerData.length - 1;
-      let data = {...user.providerData[index]};
-      this.consultarRol(data.uid);
-      this.setState({login:true});
-    } else {
-      this.setState({login: false});
-    }
+    Firebase.auth().onAuthStateChanged((user) => {
+      let login = user ? true : false;
+      if (login) {
+        this.consultarRol(user.uid);
+      }
+      this.setState({login});
+    });
   }
 
   async _renderIngreso() {
     const {password, email} = this.state.FormValue;
-    const {ingreso} = this.state;
+    const {ingreso, FormValue} = this.state;
 
     let mailformat = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
 
@@ -73,7 +71,10 @@ export default class Login extends Component {
         .then((result) => {
           this.consultarRol(result.user.uid);
           this.refs.toast.show('Login Exitoso', 500, () => {
-            this.setState({ingreso: false});
+            let data = FormValue;
+            data.email = '';
+            data.password = '';
+            this.setState({ingreso: false, FormValue: {...data}});
             this.props.navigation.navigate('App');
           });
         })
