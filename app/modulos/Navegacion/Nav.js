@@ -20,7 +20,7 @@ import * as RootNavigation from './RootNavigation';
 import WithBadge from './components/badge';
 
 
-import Subscribe from './../Notificaciones/subscribe.screen';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -61,7 +61,7 @@ function Carrito({item}) {
         }
         onPress={() => RootNavigation.navigate('Shop')}
       />
-      <Subscribe />
+      
     </View>
   );
 }

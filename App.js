@@ -26,6 +26,7 @@ export default class App extends Component {
       <Provider store={store}>
         <View style={styles.container}>
           <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+          
           <NavigationContainer ref={navigationRef}>
             <NavegacionAuth />
           </NavigationContainer>

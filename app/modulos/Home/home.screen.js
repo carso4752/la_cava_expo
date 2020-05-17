@@ -10,6 +10,10 @@ import {ActivityIndicator} from 'react-native-paper';
 import {getShop} from './../Shop/shop.utils';
 import {inject, observer} from 'mobx-react';
 
+
+import Subscribe from './../Notificaciones/subscribe.screen';
+
+
 const DeviceWidth = Dimensions.get('screen').width;
 
 class Home extends Component {
@@ -67,6 +71,7 @@ class Home extends Component {
     }
     return (
       <View style={styles.container}>
+        <Subscribe />
         <ScrollView>
           <SliderBox
             circleLoop
