@@ -79,15 +79,14 @@ class Shop extends Component {
             if(medioPago == "credit-card"){
                 this.props.navigation.navigate('PayU', {
                     screen: 'PayU',
-                    params: {pedido: compras, referencia: docRef.id, usuario: data.email},
+                    params: {pedido: compras, referencia: docRef.id, usuario: usuario.email},
                 });
             } else {
                 this.props.navigation.navigate('Productos')
-                this.renderLimpiar();
             }            
+            this.renderLimpiar();
         }).catch((err)=>{
             console.error("Error compra", err);
-            this.renderLimpiar();
         })
     }
 

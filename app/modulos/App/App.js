@@ -4,6 +4,7 @@ import { NavegacionTabs } from './../Navegacion/Nav'
 
 export default App = (props) => {
   return <View style={styles.container}>
+    <StatusBar hidden={true} />
     <NavegacionTabs {...props} />
   </View>
 }

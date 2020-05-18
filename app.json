@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "la_cava",
+    "name": "La cava",
     "slug": "la_cava",
     "privacy": "public",
     "sdkVersion": "35.0.0",
@@ -9,7 +9,7 @@
       "android",
       "web"
     ],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/ic_launcher.png",
     "splash": {
@@ -27,7 +27,14 @@
       "supportsTablet": true
     },
     "android":{
-      "permissions" : ["CAMERA_ROLL", "LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "NOTIFICATIONS"]
+      "package": "com.csoto.lacava",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDksKJmn8PnAW5lXEQm2UZwf8GIkX8QrVQ"
+        }
+      },
+      "versionCode": 101,
+      "permissions" : ["CAMERA_ROLL", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "NOTIFICATIONS"]
     }
   }
 }

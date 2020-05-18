@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, StatusBar, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, KeyboardAvoidingView } from 'react-native';
 import { Button, Image, Input, Icon } from 'react-native-elements';
 import Colors from '../../theme/colors';
 import { firebaseApp } from '../Database/Firebase';
 import * as Firebase from 'firebase';
 import 'firebase/firestore';
 import Toast, {DURATION} from 'react-native-easy-toast';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import normalize from 'react-native-normalize';
 import { ActivityIndicator } from 'react-native-paper'
 
@@ -70,10 +69,8 @@ export default class Registro extends Component {
         const { FormValue, hideConfirmPassword, hidePassword, registro } = this.state
         const { password, confirmPassword, email } = this.state.FormValue
         let toast = (DeviceScreen.height < 600 ? 130 : 180)
-        return <>
-            <StatusBar hidden={true} />
-            <View style={styles.container}>
-                <KeyboardAwareScrollView>
+        return <View style={styles.container}>
+                <KeyboardAvoidingView>
                 <View style={styles.containerLogo}>
                     <Image
                         PlaceholderContent={<ActivityIndicator color={Colors.primaryButton} />}
@@ -155,6 +152,7 @@ export default class Registro extends Component {
                     }}
                     autoCapitalize={"none"}
                 />
+                </KeyboardAvoidingView>
                 {!registro ? <Button 
                     buttonStyle={{ backgroundColor: Colors.Menu }} 
                     containerStyle={styles.button} title="Registrar" 
@@ -163,7 +161,6 @@ export default class Registro extends Component {
                 <View style={{ justifyContent:'center', marginVertical: normalize(20, 'height') }}>
                     <ActivityIndicator size="small" animating={true} color={Colors.primaryButton} />
                 </View>}
-                </KeyboardAwareScrollView>
                 <Toast
                     ref="toastError"
                     style={{backgroundColor:'red'}}
@@ -180,7 +177,6 @@ export default class Registro extends Component {
                     textStyle={{color:'white'}}
                 />
             </View>
-        </>
   }
 }
 
@@ -188,7 +184,7 @@ const styles = StyleSheet.create({
     container:{
         flex: 1,
         paddingHorizontal: normalize(30),
-        backgroundColor:'#FFF'
+        backgroundColor:'#FFF',
     },
     containerLogo:{
         alignItems:'center',
@@ -198,8 +194,8 @@ const styles = StyleSheet.create({
         marginVertical: normalize(20, 'height')
     },
     logo:{
-        width: normalize(155),
-        height: normalize(155, 'height')
+        width: normalize(120),
+        height: normalize(120, 'height')
     },
     input:{
         fontSize: normalize(16),

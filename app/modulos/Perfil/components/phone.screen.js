@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Keyboard } from 'react-native';
+import { StyleSheet, Keyboard, View } from 'react-native';
 import { Button, Input, Icon } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import Colors from '../../../theme/colors';
@@ -39,7 +39,7 @@ class Phone extends Component {
     render(){
         const { usuario, verificationCode, verificationId, confirm } = this.state
         let tituloBtn = confirm ? "Confirmar" : "Generar Código";
-        return <>
+        return <View style={styles.containerModal}>
             <FirebaseRecaptchaVerifierModal
                 ref={ref => this.recaptchaVerifier = ref}
                 firebaseConfig={firebase.app().options} 
@@ -102,7 +102,7 @@ class Phone extends Component {
                     }
                 }}
             />
-        </>
+        </View>
     }
 }
 
@@ -114,6 +114,11 @@ const styles = StyleSheet.create({
     containerInput:{
         marginBottom: normalize(15, 'height'),
         paddingHorizontal: normalize(20)
+    },
+    containerModal:{ 
+        backgroundColor: '#FFF', 
+        padding: normalize(15), 
+        marginHorizontal: normalize(20)
     }
 })
 

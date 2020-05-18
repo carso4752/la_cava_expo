@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Alert, Dimensions, Linking } from 'react-native';
-import { Icon, Avatar, ListItem, Overlay, SocialIcon } from 'react-native-elements';
+import { View, Text, StyleSheet, Alert, Dimensions, Linking, Modal } from 'react-native';
+import { Icon, Avatar, ListItem, SocialIcon } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import * as firebase from 'firebase';
 import * as Permission from 'expo-permissions';
@@ -245,16 +245,17 @@ export default class perfil extends Component{
 
     renderModal(){
         const {modalVisible} = this.state
-        return <Overlay
-            isVisible={modalVisible}
-            windowBackgroundColor='rgba(218,218,218, 0.8)'
-            overlayBackgroundColor='transparent'
-            overlayStyle={styles.modal}
-            onBackdropPress={() => {
-                this.setState({ modalVisible: false })
+        return <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+                this.setState({ modalVisible: !modalVisible })
             }}>
-            {this.vistaComponente}
-        </Overlay>
+            <View style={styles.containerModal}>
+                {this.vistaComponente}
+            </View>
+        </Modal>
     }
 
     renderWhatsapp = () =>{
@@ -393,9 +394,6 @@ const styles = StyleSheet.create({
         flex:1,
         alignItems: "center",
         paddingTop: normalize(50, 'height'),
-        paddingBottom: normalize(50, 'height'),
-        borderBottomWidth: normalize(3, 'height'),
-        borderBottomColor: "#e3e3e3"
     },
     infoUser:{
         justifyContent: 'center',
@@ -421,6 +419,11 @@ const styles = StyleSheet.create({
     button:{
         marginVertical: normalize(10, 'height'),
         marginHorizontal: normalize(10)
+    },
+    containerModal:{
+        flex: 1, 
+        justifyContent:'center',
+        backgroundColor: 'rgba(218,218,218, 0.8)'
     },
     componente:{
         backgroundColor: 'white',

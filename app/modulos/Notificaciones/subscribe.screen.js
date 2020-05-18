@@ -121,7 +121,7 @@ class Subscribe extends Component {
           element.id == e.id && (element.ped_estado_pago == e.ped_estado_pago || element.ped_estado_pago == 1 )
       );
       if (!f) {
-        this.generarNotificacion(element);
+        // this.generarNotificacion(element);
         cambios++;
       }
     }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Button, Input } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import Colors from '../../../theme/colors';
@@ -19,7 +19,7 @@ class Nombre extends Component {
     
     render(){
         const { usuario } = this.state
-        return <>
+        return <View style={styles.containerModal}>
             <Input
                 containerStyle={styles.containerInput}
                 label={"Nombre de usuario"}
@@ -48,7 +48,7 @@ class Nombre extends Component {
                     this.props.guardar(usuario)
                 }}
             />
-        </>
+        </View>
     }
 }
 
@@ -60,6 +60,11 @@ const styles = StyleSheet.create({
     containerInput:{
         marginBottom: normalize(15, 'height'),
         paddingHorizontal: normalize(20)
+    },
+    containerModal:{ 
+        backgroundColor: '#FFF', 
+        padding: normalize(15), 
+        marginHorizontal: normalize(20)
     }
 })
 

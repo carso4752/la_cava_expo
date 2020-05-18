@@ -335,6 +335,14 @@ class Notificaciones extends Component {
             color={Colors.primaryButton}
           />
         </View>
+      }
+      if(pedidos && pedidos.length == 0){
+        return <View style={styles.result}>
+            <View style={{ marginBottom: normalize(10, 'height') }}>
+                <Icon type="material-community" name="bell-off" color='grey' size={normalize(50)}/>
+            </View>
+            <Text style={{ textAlign:'center', fontSize: normalize(18) }}>¡Sin Notificaciones!</Text>
+        </View>
       }      
       return <View style={{ flex: 1, marginBottom: normalize(10, 'height') }}>
           <FlatList
@@ -357,6 +365,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     paddingHorizontal: normalize(15),
     paddingVertical: normalize(5, 'height')
+  },
+  result:{
+    flex: 1,
+    justifyContent: 'center',
   },
   modal:{
       height:'auto',
