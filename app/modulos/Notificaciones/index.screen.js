@@ -61,7 +61,7 @@ class Notificaciones extends Component {
       let fecha = moment(item.ped_fecha.toDate()).format('DD-MMMM-YYYY');
       let hora = moment(item.ped_fecha.toDate()).format('h:mm a');
       let estado = this.estados.find((e) => e.i == item.ped_estado_pago);
-      let total = 1800
+      let total = 3000
       let desface = estado.i == 5 ? 35 : 0
       {item.ped_productos.map((e)=>{
           total = total + (e.prod_costo * e.prod_cantidad)

@@ -62,9 +62,9 @@ class Shop extends Component {
 
     registrarCompra = () => {
         const { observaciones, compras, marker, medioPago, usuario } = this.state
-
+        let estado = (medioPago == "credit-card") ? 5 : 1 ;
         db.collection('tbl_pedidos').add({
-            ped_estado_pago: 1,
+            ped_estado_pago: estado,
             ped_fecha: new Date(),
             ped_observaciones_cliente: observaciones,
             ped_productos: compras,
@@ -124,7 +124,7 @@ class Shop extends Component {
 
     renderResultados() {
         const {compras} = this.state;
-        this.total = compras.length == 0 ? 0 : 1800;
+        this.total = compras.length == 0 ? 0 : 3000;
         return <>
             {compras.length == 0 ? <View style={styles.result}>
                     <View style={{ marginTop: normalize(10, 'height'), marginBottom: normalize(3, 'height') }} >
@@ -138,7 +138,7 @@ class Shop extends Component {
                     <Text style={{textAlign: 'center', fontSize: normalize(18)}}>Agrega productos al carrito</Text>
                 </View> :
                 <ScrollView>
-                <Text style={{ color: 'grey', fontSize: normalize(15), marginTop: normalize(15, 'height'), marginLeft: normalize(15) }}>Domicilio: $1.800</Text>
+                <Text style={{ color: 'grey', fontSize: normalize(15), marginTop: normalize(15, 'height'), marginLeft: normalize(15) }}>Domicilio: $3.000</Text>
                 {compras.map((item, index) => {
                     this.total = this.total + item.prod_costo * item.prod_cantidad;
                     let costo = '$' + (item.prod_costo * item.prod_cantidad).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -315,6 +315,7 @@ class Shop extends Component {
                 }
                 <Input
                     label={'Observaciones:'}
+                    placeholder={'Torre, Apto, Calle, Carrera, Diag, Piso... Información opcional'}
                     maxLength={100}
                     multiline={true}
                     numberOfLines={3}

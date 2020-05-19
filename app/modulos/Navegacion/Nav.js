@@ -15,15 +15,26 @@ import ShopScreen from '../Shop/shop.screen';
 import PayUScreen from '../Shop/payU.screen';
 import NotificacionesScreen from '../Notificaciones/index.screen'
 import App from '../App/App';
-import {View} from 'react-native';
+import {View, Linking, Alert} from 'react-native';
 import * as RootNavigation from './RootNavigation';
 import WithBadge from './components/badge';
 
 
-
-
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+function renderWhatsapp(){
+  let text = "Hola. Estoy interesad@ en... ";
+  let phoneNumber = '+57 3137050608';
+  let link = `whatsapp://send?text=${text}&phone=${phoneNumber}`;
+  Linking.canOpenURL(link).then(supported => {
+      if (!supported) {
+          Alert.alert('Instala la aplicación para brindarte una mejor experiencia');
+      } else {
+          return Linking.openURL(link);
+      }
+  }).catch(err => console.error(err));
+}
 
 function Carrito({item}) {
   return (
@@ -32,9 +43,15 @@ function Carrito({item}) {
         marginRight: normalize(10),
         flexDirection: 'row',
         justifyContent: 'space-around',
-        width: normalize(85),
+        width: normalize(120),
       }}
     >
+      <Icon
+          name="whatsapp"
+          type="material-community"
+          size={normalize(28)}
+          onPress={renderWhatsapp}
+      />
       <WithBadge
         value="n"
         options={{}}

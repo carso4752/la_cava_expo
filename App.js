@@ -25,7 +25,6 @@ export default class App extends Component {
     return (
       <Provider store={store}>
         <View style={styles.container}>
-          <StatusBar hidden={true} />
           <NavigationContainer ref={navigationRef}>
             <NavegacionAuth />
           </NavigationContainer>

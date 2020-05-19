@@ -88,7 +88,9 @@ class Subscribe extends Component {
           pedidos = [];
           querySnapshot.forEach(function (doc) {
             let data = doc.data();
-            pedidos.push({...data, id: doc.id});
+            if(data.ped_estado_pago != 2){
+              pedidos.push({...data, id: doc.id});
+            }
           });
 
           pedidos.sort(function(a, b){

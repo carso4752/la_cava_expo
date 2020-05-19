@@ -259,7 +259,7 @@ export default class perfil extends Component{
     }
 
     renderWhatsapp = () =>{
-        let text = "Qué Tal Unas Cervezas Pa' Hoy ?";
+        let text = "Hola. Estoy interesad@ en... ";
         let phoneNumber = '+57 3137050608';
         let link = `whatsapp://send?text=${text}&phone=${phoneNumber}`;
         Linking.canOpenURL(link).then(supported => {

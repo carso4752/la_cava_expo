@@ -30,7 +30,7 @@ export default class payU extends Component {
         <div style="padding: 20px;">
         <ul style='list-style:none'>
         `;
-        let total =  1800;
+        let total =  3000;
         for (let index = 0; index < compras.length; index++) {
             const item = compras[index];
             total = total + item.prod_costo * item.prod_cantidad;
@@ -48,21 +48,25 @@ export default class payU extends Component {
                 </li>`;
         }
 
-        let ApiKey = "4Vj8eK4rloUd272L48hsrarnUA";
+        let ApiKey = "Z3IydaKINMS6Jse38z573G3QL1";
         let currency = 'COP';
-        let merchantId = "508029";
+        let merchantId = "828401";
+        let accoundId = "835695";
         let signature = md5.hex_md5(`${ApiKey}~${merchantId}~${referencia}~${total}~${currency}`);
 
-        html += `</ul> <form method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/">
-                <input name="merchantId"    type="hidden"  value="${merchantId}"   >
-                <input name="accountId"     type="hidden"  value="512321" >
-                <input name="description"   type="hidden"  value="Compra Productos La Cava"  >
-                <input name="referenceCode" type="hidden"  value="${referencia}" >
-                <input name="amount"        type="hidden"  value="${total}"   >
-                <input name="currency"      type="hidden"  value="${currency}" >
-                <input name="signature"     type="hidden"  value="${signature}"  >
-                <input name="test"          type="hidden"  value="1" >
-                <input name="buyerEmail"    type="hidden"  value="${email}" >
+        html += `</ul> <form method="post" action="https://checkout.payulatam.com/ppp-web-gateway-payu/">
+                <input name="merchantId"    type="hidden"  value="${merchantId}">
+                <input name="ApiKey"    type="hidden"  value="${ApiKey}">
+                <input name="accountId"     type="hidden"  value="${accoundId}">
+                <input name="description"   type="hidden"  value="Compra productos La Cava">
+                <input name="tax"   type="hidden"  value="0">
+                <input name="taxReturnBase"   type="hidden"  value="0">
+                <input name="referenceCode" type="hidden"  value="${referencia}">
+                <input name="amount"        type="hidden"  value="${total}">
+                <input name="currency"      type="hidden"  value="${currency}">
+                <input name="signature"     type="hidden"  value="${signature}">
+                <input name="test"          type="hidden"  value="0">
+                <input name="buyerEmail"    type="hidden"  value="${email}">
                 <input name="confirmationUrl"    type="hidden"  value="https://us-central1-lacava-a1dab.cloudfunctions.net/addPagoPayU" >
                 <input name="Submit" style="background: #17A589;
                 width: 100%;
