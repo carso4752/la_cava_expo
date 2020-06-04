@@ -101,27 +101,22 @@ exports.sendNotification = functions.firestore
       items.get().then((result) => {
         result.forEach((element) => {
           const message = {
-            notification: {
-              sound: 'default',
-              title: `Pedido ${data.ped_usuario}`,
-              body: `${contenido.mensaje_usuario}`,
-            },
+            to: element.data().id_token,
+            sound: 'default',
+            title: `Pedido ${data.ped_usuario}`,
+            body: `${contenido.mensaje_usuario}`,
           };
-          admin.messaging().sendToDevice(element.data().id_token, message);
-          //sendPushNotification(message);
+          sendPushNotification(message);
         });
       });
     } else {
       const message = {
-        notification: {
-          sound: 'default',
-          title: `Pedido ${data.ped_fecha}`,
-          body: `${contenido.mensaje_usuario}`,
-        },
+        to: data.ped_token,
+        sound: 'default',
+        title: `Pedido ${data.ped_fecha}`,
+        body: `${contenido.mensaje_usuario}`,
       };
-
-      admin.messaging().sendToDevice(data.ped_token, message);
-      //sendPushNotification(message);
+      sendPushNotification(message);
     }
     return true;
   });
