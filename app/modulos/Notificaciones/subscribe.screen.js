@@ -21,16 +21,7 @@ class Subscribe extends Component {
         rol: 2
     };
   }
-  realtime = null;
-  
-  mensajes = [
-    {i: '1', mensaje_usuario: 'Tienes un nuevo pedido'},
-    {i: '2', mensaje_usuario: 'El pedido fue cancelado'},
-    {i: '3', mensaje_usuario: 'Tu pedido fue rechazado, puedes verificar el motivo en nuestra app'},
-    {i: '4', mensaje_usuario: 'Tu pedido ya está en camino'},
-    {i: '5', mensaje_usuario: 'Pago rechazado, valida tu saldo con tu entidad financiera'},
-    {i: '6', mensaje_usuario: 'Muchas gracias por preferirnos'},
-  ];
+  realtime = null;  
 
   async componentDidMount() {
     db = firebase.firestore(firebaseApp);
@@ -123,57 +114,11 @@ class Subscribe extends Component {
           element.id == e.id && (element.ped_estado_pago == e.ped_estado_pago || element.ped_estado_pago == 1 )
       );
       if (!f) {
-        // this.generarNotificacion(element);
         cambios++;
       }
     }
     setNotyBadge(cambios);
   };
-
-  generarNotificacion = async(item) => {
-    const { token } =  this.state
-    let titulo = (item.id).toUpperCase();
-    let contenido = this.mensajes.find((e) => e.i == item.ped_estado_pago);
-    let rol = await getRol();
-    
-    if(rol == 2){
-      if (item.ped_estado_pago == 1 || item.ped_estado_pago == 2){
-        const items = db.collection("tbl_admin_token")
-        await items.get().then(result => {
-          result.forEach(element => {
-            const message = {
-              to: element.data().id_token,
-              sound: 'default',
-              title: `Pedido ${titulo}`,
-              body: `${contenido.mensaje_usuario}`
-            };
-            this.sendPushNotification(message)
-          });
-        }); 
-      } 
-      else {
-          const message = {
-            to: token,
-            sound: 'default',
-            title: `Pedido ${titulo}`,
-            body: `${contenido.mensaje_usuario}`
-          };
-          this.sendPushNotification(message)
-      }    
-    }
-  };
-
-  sendPushNotification = async(message) =>{
-    const response = await fetch('https://exp.host/--/api/v2/push/send', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Accept-encoding': 'gzip, deflate',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(message),
-    });
-  }
 
   componentWillUnmount() {
     if (this.realtime) {

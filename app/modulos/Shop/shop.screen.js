@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Alert, Picker, Dimensions } from 'r
 import { ListItem, Icon, Input, Overlay, Button } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import { getShop, setShop } from './shop.utils';
+import { Notifications } from 'expo';
 import Colors from '../../theme/colors';
 import * as Location from 'expo-location';
 import * as Permission from 'expo-permissions';
@@ -28,7 +29,8 @@ class Shop extends Component {
         observaciones: null,
         cargando: false,
         usuario: null,
-        id: null
+        id: null,
+        token: null
     }
     total = 0
 
@@ -47,7 +49,7 @@ class Shop extends Component {
         db = firebase.firestore(firebaseApp);
     }
 
-    validarDatos = () => {
+    validarDatos = async() => {
         const { marker, medioPago, usuario } = this.state
         if(!usuario.phoneNumber || !usuario.displayName ){
             this.refs.toastError.show('Agrega un número celular en el perfil', 2000);
@@ -56,12 +58,23 @@ class Shop extends Component {
         } else if( medioPago == "credit-card" && this.total < 12000){
             this.refs.toastError.show('El pago mínimo con tarjeta es de $12.000', 2000);
         } else {
+            await this.getToken();
             this.registrarCompra();
         }
     }
 
+    getToken = async () => {
+        const permisoNotify = await Permission.askAsync(Permission.NOTIFICATIONS);
+        const status = permisoNotify.permissions.notifications.status;
+        console.log("status", status)
+        if(status === "granted"){
+          const token = await Notifications.getExpoPushTokenAsync();
+          await this.setState({ token })
+        }
+      }
+
     registrarCompra = () => {
-        const { observaciones, compras, marker, medioPago, usuario } = this.state
+        const { observaciones, compras, marker, medioPago, usuario, token } = this.state
         let estado = (medioPago == "credit-card") ? 5 : 1 ;
         db.collection('tbl_pedidos').add({
             ped_estado_pago: estado,
@@ -73,7 +86,9 @@ class Shop extends Component {
             ped_usuario: usuario.displayName,
             ped_email: usuario.email,
             ped_telefono: usuario.phoneNumber,
-            ped_valor: this.total
+            ped_valor: this.total,
+            ped_token: token,
+            ped_notify: false
 
         }).then((docRef)=>{
             if(medioPago == "credit-card"){
