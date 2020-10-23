@@ -18,7 +18,7 @@ import {Provider, inject, observer} from 'mobx-react';
 import store from './app/modulos/Store';
 
 console.disableYellowBox = true;
-if(!Firebase.app.length){
+if(Firebase.app.length){
   Firebase.initializeApp(FirebaseConfig);
 }
 export default class App extends Component {
