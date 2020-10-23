@@ -113,7 +113,6 @@ export default class Login extends Component {
       <>
         <StatusBar hidden={true} />
         <View style={styles.container}>
-          <KeyboardAwareScrollView>
             <View style={styles.containerLogo}>
               <Image
                 PlaceholderContent={
@@ -203,7 +202,6 @@ export default class Login extends Component {
                 Registrate
               </Text>
             </Text>
-          </KeyboardAwareScrollView>
           <Toast
             ref="toastError"
             style={{backgroundColor: 'red'}}

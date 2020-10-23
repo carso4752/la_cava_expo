@@ -3,7 +3,7 @@
     "name": "La cava",
     "slug": "la_cava",
     "privacy": "public",
-    "sdkVersion": "35.0.0",
+    "sdkVersion": "39.0.0",
     "platforms": [
       "ios",
       "android",
@@ -26,7 +26,7 @@
     "ios": {
       "supportsTablet": true
     },
-    "android":{
+    "android": {
       "package": "com.csoto.lacava",
       "config": {
         "googleMaps": {
@@ -34,7 +34,16 @@
         }
       },
       "versionCode": 101,
-      "permissions" : ["CAMERA_ROLL", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "NOTIFICATIONS"]
-    }
+      "permissions": [
+        "CAMERA_ROLL",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "NOTIFICATIONS"
+      ]
+    },
+    "description": "Cambio a SDK 39.0.0"
   }
 }
