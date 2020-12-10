@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Picker, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Picker, Dimensions, Platform } from 'react-native';
+import RNPickerSelect from 'react-native-picker-select';
 import { ListItem, Icon, Input, Overlay, Button } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import { getShop, setShop } from './shop.utils';
@@ -262,7 +263,15 @@ class Shop extends Component {
                 />
                 <View style={{ marginBottom: normalize(15, 'height'), flexDirection: 'row', justifyContent:'flex-start' }}>
                     <Text style={{ marginLeft: 10, fontSize: normalize(18) }}>Medio de pago:</Text>
-                    <Picker
+                    { Platform.OS == 'ios' ? <RNPickerSelect
+                        onValueChange={(value) => this.setState({ medioPago: value })}
+                        items={[
+                            { label: 'Tarjeta', value: 'credit-card' },
+                            { label: 'Efectivo', value: 'money' },
+                            { label: 'QR', value: 'qrcode' },
+                        ]}
+                    />
+                    :<Picker
                         selectedValue={medioPago}
                         style={{ height: normalize(25, 'height'), width: normalize (240) }}
                         onValueChange={(itemValue) => this.setState({ medioPago: itemValue })}
@@ -270,7 +279,7 @@ class Shop extends Component {
                         <Picker.Item label="Tarjeta" value="credit-card" />
                         <Picker.Item label="Efectivo" value="money" />
                         <Picker.Item label="QR" value="qrcode" />
-                    </Picker>
+                    </Picker> }
                 </View>
             </View>
             <Button 

@@ -5,7 +5,6 @@ import Colors from '../../theme/colors';
 import {Image, Icon} from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import ProductoScreen from '../Productos/productos.screen';
-import AgregarItemScreen from '../Productos/agregarItem.screen';
 import HomeScreen from '../Home/home.screen';
 import BuscadorScreen from '../Buscador/buscador.screen';
 import PerfilScreen from '../Perfil/perfil.screen';
@@ -27,7 +26,7 @@ function renderWhatsapp(){
   let text = "Hola. Estoy interesad@ en... ";
   let phoneNumber = '+57 3137050608';
   let link = `whatsapp://send?text=${text}&phone=${phoneNumber}`;
-  Linking.canOpenURL(link).then(supported => {
+  Linking.openURL(link).then(supported => {
       if (!supported) {
           Alert.alert('Instala la aplicación para brindarte una mejor experiencia');
       } else {
@@ -386,30 +385,6 @@ function NavegacionTabs({route, navigation}) {
       screenOptions={{headerShown: false}}
     >
       <Stack.Screen name="Tabs" component={AppTabs} />
-      <Stack.Screen
-        name="Item"
-        component={AgregarItemScreen}
-        options={({navigation}) => ({
-          title: 'Agregar Producto',
-          headerTitleAlign: 'center',
-          headerLeft: () => (
-            <View
-              style={{
-                marginLeft: normalize(20),
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <Icon
-                name={'arrow-left'}
-                type={'material-community'}
-                size={normalize(28)}
-                onPress={() => navigation.navigate('Productos')}
-              />
-            </View>
-          ),
-        })}
-      />
       <Stack.Screen name="Shop" component={ShopStack} />
       <Stack.Screen name="PayU" component={PayUStack} />
       <Stack.Screen name="Notificaciones" component={NotificacionesStack} />
