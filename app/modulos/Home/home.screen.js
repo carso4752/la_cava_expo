@@ -75,7 +75,7 @@ class Home extends Component {
         <ScrollView>
           <SliderBox
             circleLoop
-            sliderBoxHeight={normalize(170, 'height')}
+            sliderBoxHeight={normalize(160, 'height')}
             images={banners}
             dotColor={Colors.primary}
           />

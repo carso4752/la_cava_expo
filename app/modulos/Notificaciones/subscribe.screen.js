@@ -3,7 +3,7 @@ import {Alert} from 'react-native';
 import {inject, observer} from 'mobx-react';
 import {setPedidos, getPedidos} from './../Shop/shop.utils';
 import * as Permission from 'expo-permissions';
-import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 import {firebaseApp} from './../Database/Firebase';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
@@ -46,7 +46,7 @@ class Subscribe extends Component {
     if(status === "denied"){
         Alert.alert("Permiso denegado", "Se deben conceder los permisos necesarios para el envió de notificaciones")
     } else {
-      const token = await Notifications.getExpoPushTokenAsync();
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
       await this.setState({ token })
       return token
     }

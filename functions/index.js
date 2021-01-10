@@ -60,8 +60,9 @@ exports.addPagoPayU = functions.https.onRequest((req, res) => {
     });
 });
 
-sendPushNotification = (message) => {
-  fetch('https://exp.host/--/api/v2/push/send', {
+sendPushNotification = async (message) => {
+  console.log("Notify Push", message.title)
+  await fetch('https://exp.host/--/api/v2/push/send', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -95,7 +96,6 @@ exports.sendNotification = functions.firestore
     let data = change.after.data();
 
     let contenido = mensajes.find((e) => e.i == data.ped_estado_pago);
-
     if (data.ped_estado_pago == 1 || data.ped_estado_pago == 2) {
       const items = db.collection('tbl_admin_token');
       items.get().then((result) => {

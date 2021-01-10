@@ -16,6 +16,7 @@
     "expo-firebase-recaptcha": "1.0.0",
     "expo-image-picker": "~9.1.0",
     "expo-location": "~9.0.0",
+    "expo-notifications": "~0.7.2",
     "expo-permissions": "~9.3.0",
     "firebase": "7.9.0",
     "firesql": "2.0.2",

@@ -224,21 +224,26 @@ export default class perfil extends Component{
         this.setState({ modalVisible: false })
     }
 
+    setModal = () => {
+        const { modalVisible } = this.state
+        this.setState({ modalVisible: !modalVisible })
+    }
+
     selectedComponent(key){ 
         const { usuario } = this.state   
         this.setState({ modalVisible: true })
         switch (key) {
             case 'name':
-                this.vistaComponente=(<Nombre guardar={this.updateComponentName} data={usuario} />)
+                this.vistaComponente = (<Nombre guardar={this.updateComponentName} cerrar={this.setModal} data={usuario} />)
                 break;
             case 'email':
-                this.vistaComponente=(<Email guardar={this.updateComponentEmail} data={usuario} />)
+                this.vistaComponente = (<Email guardar={this.updateComponentEmail} cerrar={this.setModal} data={usuario} />)
                 break;
             case 'phone':
-                this.vistaComponente=(<Phone guardar={this.updateComponentPhone} data={usuario} />)
+                this.vistaComponente = (<Phone guardar={this.updateComponentPhone} cerrar={this.setModal} data={usuario} />)
                 break;
             case 'password':
-                this.vistaComponente=(<Password guardar={this.updateComponentPassword} />)
+                this.vistaComponente = (<Password guardar={this.updateComponentPassword} cerrar={this.setModal} />)
                 break;
         }
     }
@@ -361,7 +366,7 @@ export default class perfil extends Component{
                 <SocialIcon
                     type='whatsapp'
                     iconSize={20}
-                    style={{ backgroundColor: '#36A62B', width: normalize(40), height: normalize(40, 'height'), position:'absolute', top: 10, left: normalize(20) }}
+                    style={{ backgroundColor: '#36A62B', width: normalize(40), height: normalize(35, 'height'), position:'absolute', top: 10, left: normalize(20) }}
                     onPress={this.renderWhatsapp}
                 />
                 <SocialIcon
@@ -369,13 +374,13 @@ export default class perfil extends Component{
                     type='instagram'
                     iconSize={20}
                     iconStyle={{ color: '#E91E63'}}
-                    style={{ width: normalize(40), height: normalize(40, 'height'), position:'absolute', top: 10, left: normalize(70) }}
+                    style={{ width: normalize(40), height: normalize(35, 'height'), position:'absolute', top: 10, left: normalize(70) }}
                     onPress={this.renderInstagram}
                 />
                 <SocialIcon
                     type='facebook'
                     iconSize={20}
-                    style={{ backgroundColor: '#1976D2', width: normalize(40), height: normalize(40, 'height'), position:'absolute', top: 10, left: normalize(120) }}
+                    style={{ backgroundColor: '#1976D2', width: normalize(40), height: normalize(35, 'height'), position:'absolute', top: 10, left: normalize(120) }}
                     onPress={this.renderFacebook}
                 />
                 <View style={styles.cerrarSesion}>

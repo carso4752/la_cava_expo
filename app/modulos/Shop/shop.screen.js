@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Picker, Dimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Picker, Alert, Dimensions, Platform, PickerIOS } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { ListItem, Icon, Input, Overlay, Button } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import { getShop, setShop } from './shop.utils';
-import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 import Colors from '../../theme/colors';
 import * as Location from 'expo-location';
 import * as Permission from 'expo-permissions';
@@ -51,13 +51,13 @@ class Shop extends Component {
     }
 
     validarDatos = async() => {
-        const { marker, medioPago, usuario } = this.state
+        const { marker, medioPago, usuario, observaciones } = this.state
         if(!usuario.phoneNumber || !usuario.displayName ){
             this.refs.toastError.show('Agrega un número celular en el perfil', 2000);
-        } else if(!marker){
+        } else if(!marker || !observaciones){
             this.refs.toastError.show('Por favor confirme su ubicación', 2000);
-        } else if( medioPago == "credit-card" && this.total < 12000){
-            this.refs.toastError.show('El pago mínimo con tarjeta es de $12.000', 2000);
+        } else if( medioPago == "credit-card" && this.total < 30000){
+            this.refs.toastError.show('El pago mínimo con tarjeta es de $30.000', 2000);
         } else {
             await this.getToken();
             this.registrarCompra();
@@ -69,7 +69,7 @@ class Shop extends Component {
         const status = permisoNotify.permissions.notifications.status;
         console.log("status", status)
         if(status === "granted"){
-          const token = await Notifications.getExpoPushTokenAsync();
+          const token = (await Notifications.getExpoPushTokenAsync()).data;
           await this.setState({ token })
         }
       }
@@ -224,7 +224,7 @@ class Shop extends Component {
     renderOpciones = () => {
         const { mapVisible, medioPago, observaciones, confirmLocation } = this.state
         let pago = null
-        let obs = observaciones ? observaciones.substring(0,35) + '...' : null
+        let obs = observaciones ? "Observaciones: " + observaciones.substring(0,35) + '...' : null
         if (medioPago == "credit-card"){ pago = "PAGAR EN LINEA" }
         else { pago = "SOLICITAR PEDIDO" }
         return <>
@@ -235,7 +235,7 @@ class Shop extends Component {
                     inputStyle={{ fontSize: normalize(18) }}
                     containerStyle={{ marginBottom: normalize(10, 'height') }}
                     inputContainerStyle={{ borderBottomWidth: 0 }}
-                    placeholder={confirmLocation ? 'Ubicación confirmada' : 'Ubicación'}
+                    placeholder={confirmLocation ? 'Ubicación confirmada' : 'Selecciona la Ubicación...'}
                     placeholderTextColor={Colors.primaryText}
                     rightIconContainerStyle={{ paddingRight: normalize(15) }}
                     rightIcon={
@@ -261,25 +261,41 @@ class Shop extends Component {
                         />
                     }
                 />
-                <View style={{ marginBottom: normalize(15, 'height'), flexDirection: 'row', justifyContent:'flex-start' }}>
-                    <Text style={{ marginLeft: 10, fontSize: normalize(18) }}>Medio de pago:</Text>
-                    { Platform.OS == 'ios' ? <RNPickerSelect
+                <View style={{ alignItems:'center', marginBottom: normalize(15, 'height'), flexDirection: 'row' }}>
+                    <Text style={{ flex: 1, marginLeft: 10, fontSize: normalize(18) }}>Medio de pago:</Text>
+                    {Platform.OS == 'ios' ?
+                    <View style={{ flex: 1, flexDirection: 'row-reverse', paddingLeft: 25 }}>
+                        <RNPickerSelect
+                        placeholder={{
+                            label: 'Seleccione',
+                            value: null
+                        }}
+                        textInputProps={{
+                            fontSize: 17,
+                            color: 'black'
+                        }}   
+                        value={this.state.medioPago}
                         onValueChange={(value) => this.setState({ medioPago: value })}
                         items={[
                             { label: 'Tarjeta', value: 'credit-card' },
                             { label: 'Efectivo', value: 'money' },
                             { label: 'QR', value: 'qrcode' },
-                        ]}
-                    />
-                    :<Picker
-                        selectedValue={medioPago}
-                        style={{ height: normalize(25, 'height'), width: normalize (240) }}
-                        onValueChange={(itemValue) => this.setState({ medioPago: itemValue })}
-                    >
-                        <Picker.Item label="Tarjeta" value="credit-card" />
-                        <Picker.Item label="Efectivo" value="money" />
-                        <Picker.Item label="QR" value="qrcode" />
-                    </Picker> }
+                        ]}/>
+                    </View>
+                    : <View style={{ flex: 1, paddingRight: 10 }}>
+                        <RNPickerSelect
+                        placeholder={{
+                            label: 'Seleccione',
+                            value: null,
+                        }}
+                        value={this.state.medioPago}
+                        onValueChange={(value) => this.setState({ medioPago: value })}
+                        items={[
+                            { label: 'Tarjeta', value: 'credit-card' },
+                            { label: 'Efectivo', value: 'money' },
+                            { label: 'QR', value: 'qrcode' },
+                        ]}/>
+                    </View> }
                 </View>
             </View>
             <Button 
@@ -310,11 +326,10 @@ class Shop extends Component {
             isVisible={mapVisible}
             windowBackgroundColor='rgba(218,218,218, 0.8)'
             overlayStyle={styles.modal}
-            containerStyle={{ borderColor: 'red' }}
             onBackdropPress={() => {
                 this.setState({ mapVisible: !mapVisible })
             }}>
-            <View>
+            <ScrollView>
                 <Text style={{ textAlign: 'center', color:'grey' }}>LA DIRECCIÓN ES OBTENIDA DESDE UBICACIÓN ACTUAL DEL DISPOSITIVO</Text>
                 { location &&
                     <MapView
@@ -339,7 +354,7 @@ class Shop extends Component {
                 }
                 <Input
                     label={'Observaciones:'}
-                    placeholder={'Torre, Apto, Calle, Carrera, Diag, Piso... Información opcional'}
+                    placeholder={'Ejem: Torre, Apto, Calle, Carrera, Diag, Piso... Información obligaroria'}
                     maxLength={100}
                     multiline={true}
                     numberOfLines={3}
@@ -354,22 +369,28 @@ class Shop extends Component {
                 buttonStyle={{ backgroundColor: Colors.primaryButton, marginTop: normalize(20, 'height') }}
                 titleStyle={{ fontSize: normalize(20) }}
                 title={'Confirmar Ubicación'}
-                onPress={()=>{
-                    if(location === marker){
-                        this.setState({ confirmLocation: true, mapVisible: !mapVisible  })
+                onPress={() => {
+                    if (observaciones) {
+                        if(location === marker){
+                            this.setState({ confirmLocation: true, mapVisible: !mapVisible  })
+                        } else {
+                            Alert.alert("Nueva Ubicación",
+                                "¿Esta seguro de recibir su pedido en la nueva ubicación seleccionada?",
+                                [
+                                { text: "Cancelar", onPress: () => this.setState({ marker: location })},
+                                { text: "Si", onPress: () => this.setState({ confirmLocation: true, mapVisible: !mapVisible  }) }
+                                ],
+                                { cancelable: false }
+                            );
+                        }
                     } else {
-                        Alert.alert("Nueva Ubicación",
-                            "¿Esta seguro de recibir su pedido en la nueva ubicación seleccionada?",
-                            [
-                              { text: "Cancelar", onPress: () => this.setState({ marker: location })},
-                              { text: "Si", onPress: () => this.setState({ confirmLocation: true, mapVisible: !mapVisible  }) }
-                            ],
-                            { cancelable: false }
-                          );
+                        Alert.alert("¡Recuerda!",
+                            "Dejar los datos de tu ubicación en la casilla de observaciones"
+                        );
                     }
                 }} 
             />
-            </View>
+            </ScrollView>
         </Overlay>
     }
 
@@ -419,7 +440,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
     },
     map:{
-        height: normalize(350, 'height'),
+        height: normalize(300, 'height'),
         marginVertical: normalize(15)
     }
 })

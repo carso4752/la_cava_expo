@@ -30,6 +30,7 @@
     },
     "android": {
       "package": "com.csoto.lacava",
+      "useNextNotificationsApi": true,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDksKJmn8PnAW5lXEQm2UZwf8GIkX8QrVQ"

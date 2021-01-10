@@ -3,6 +3,7 @@ import { View, FlatList, Text, StyleSheet, ScrollView, Modal, Platform, Linking 
 import { Card, ListItem, Icon, Button, Input } from 'react-native-elements';
 import { inject, observer } from 'mobx-react';
 import moment from 'moment';
+import 'moment/locale/es'
 import normalize from 'react-native-normalize';
 import { ActivityIndicator } from 'react-native-paper';
 import Colors from '../../theme/colors';
@@ -16,6 +17,7 @@ import * as firebase from 'firebase';
 import 'firebase/firestore';
 
 var db = null
+moment.locale('es');
 
 const CavaLatitude = 6.323032;
 const CavaLongitude = -75.559653;
@@ -227,7 +229,7 @@ class Notificaciones extends Component {
               this.setState({ visibleMensaje: !visibleMensaje, mensaje: '¿Motivo del rechazo?', titulo: '¡Uy, que mal!', type: 'R' })
             }} />
             <Button title='ACEPTAR' buttonStyle={{ backgroundColor: Colors.primaryButton }} containerStyle={{ width: '50%' }} onPress={()=>{
-              this.setState({ visibleMensaje: !visibleMensaje, mensaje: '¿Tiempo aproximado de entrega?', titulo: '¡Estamos listos!', type: 'A' })
+              this.setState({ visibleMensaje: !visibleMensaje, mensaje: '¿Tiempo aproximado de entrega (minutos)?', titulo: '¡Estamos listos!', type: 'A' })
             }} />
           </View>
         }

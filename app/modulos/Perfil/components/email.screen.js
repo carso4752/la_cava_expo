@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import { Button, Input, Icon } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import Colors from '../../../theme/colors';
@@ -24,6 +24,11 @@ class Email extends Component {
         const { usuario, hidePassword, password, confirm } = this.state
         let tituloBtn = confirm ? "Confirmar" : "Cambiar";
         return <View style={styles.containerModal}>
+            {Platform.OS === "ios" && <View style={{ alignItems: 'flex-end', paddingRight: normalize(5) }}>
+                <Icon type='material-community' name='close' color={Colors.Menu} size={normalize(30)} onPress={() => {
+                    this.props.cerrar()
+                }} />
+            </View>}
             <Input
                 containerStyle={styles.containerInput}
                 label={"Correo electrónico"}

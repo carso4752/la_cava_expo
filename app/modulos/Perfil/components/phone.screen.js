@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Keyboard, View } from 'react-native';
+import { StyleSheet, Keyboard, View, Platform } from 'react-native';
 import { Button, Input, Icon } from 'react-native-elements';
 import normalize from 'react-native-normalize';
 import Colors from '../../../theme/colors';
@@ -40,6 +40,11 @@ class Phone extends Component {
         const { usuario, verificationCode, verificationId, confirm } = this.state
         let tituloBtn = confirm ? "Confirmar" : "Generar Código";
         return <View style={styles.containerModal}>
+            {Platform.OS === "ios" && <View style={{ alignItems: 'flex-end', paddingRight: normalize(5) }}>
+                <Icon type='material-community' name='close' color={Colors.Menu} size={normalize(30)} onPress={() => {
+                    this.props.cerrar()
+                }} />
+            </View>}
             <FirebaseRecaptchaVerifierModal
                 ref={ref => this.recaptchaVerifier = ref}
                 firebaseConfig={firebase.app().options} 
