@@ -114,8 +114,7 @@ class Productos extends Component {
 
         }).catch((err) => {
             let { productos } = this.state
-            console.log("err", err)
-            console.log("uid", uid + productos[index].prod_nombre)
+            console.log("err", err.message_)
         });
     }
 
@@ -123,13 +122,14 @@ class Productos extends Component {
         db.doc(`tbl_productos/${id}`).set(item).then(() => {
             console.log("Actualización correcta", id)
         }).catch((err) => {
-            console.log("Error Actualización", err)
+            console.log("Error Actualización", err.message_)
         })
     }
 
     renderProductos = ({ item, index }) => {
         try {
             const { modalVisible } = this.state
+            let arrayBusqueda = item.prod_nombre.split(" ");
             let url_producto = url_default
             if (item.prod_estado) {
                 if (item.prod_url) {
@@ -143,6 +143,11 @@ class Productos extends Component {
                 } else {
                     this.urlImagen(item.prod_imagen_agotado, index)
                 }
+            }
+            if (!item.prod_busqueda || (item.prod_busqueda.length !== arrayBusqueda.length)) {
+                let id = item.prod_imagen;
+                item.prod_busqueda = arrayBusqueda;
+                this.updateData(id,item)
             }
             let costo = (item.prod_costo).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
             return <TouchableNative onPress={() => {
@@ -158,9 +163,8 @@ class Productos extends Component {
                     <Text ellipsizeMode={'tail'} numberOfLines={1} style={{ fontSize: normalize(13), paddingLeft: normalize(8) }}>${costo}</Text>
                 </View>
             </TouchableNative>
-        } catch (error) {
-            console.log("item", item)
-            console.log("error", error)
+        } catch (err) {
+            console.log("err", err.message_)
         }
     }
 

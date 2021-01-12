@@ -109,7 +109,7 @@ class Buscador extends Component {
             const { resultados } = this.state
             let item = resultados[index]
             let id = item.prod_imagen;
-
+            let arrayBusqueda = item.prod_nombre.split(" ");
             if (item.prod_estado) {
                 item.prod_url = result;
                 item.prod_url_agotado = item.prod_url_agotado ? item.prod_url_agotado : '';
@@ -117,12 +117,14 @@ class Buscador extends Component {
                 item.prod_url = item.prod_url ? item.prod_url : '';
                 item.prod_url_agotado = result;
             }
+            if (!item.prod_busqueda || (item.prod_busqueda.length !== arrayBusqueda.length)) {
+                item.prod_busqueda = arrayBusqueda;
+                this.updateData(id, item)
+            }
             this.updateData(id, item)
 
         }).catch((err) => {
-            let { resultados } = this.state
-            console.log("err", err)
-            console.log("uid", uid + resultados[index].prod_nombre)
+            console.log("err", err.message_)
         });
     }
 
@@ -130,7 +132,7 @@ class Buscador extends Component {
         db.doc(`tbl_productos/${id}`).set(item).then(() => {
             console.log("Actualización correcta", id)
         }).catch((err) => {
-            console.log("Error Actualización", err)
+            console.log("Error Actualización", err.message_)
         })
     }
 
@@ -218,11 +220,11 @@ class Buscador extends Component {
                     if(textBuscador){
                         this.setState({ cargando: !cargando })
                         let texto = textBuscador.toUpperCase();
-                        const productos = fireSql.query(`SELECT * FROM tbl_productos WHERE prod_nombre LIKE '${texto}%'`)
+                        const productos = fireSql.query(`SELECT * FROM tbl_productos WHERE prod_busqueda CONTAINS '${texto}'`)
                         await productos.then(result =>{
                             this.setState({ resultados: result, cargando: false })
                         }).catch(err => {
-                            console.log("err", err)
+                            console.log("err", err.message_)
                         });
                     } else {
                         Alert.alert("Alerta", "Se debe ingresar información para la busqueda")

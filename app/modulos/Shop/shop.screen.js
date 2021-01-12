@@ -102,7 +102,7 @@ class Shop extends Component {
             }            
             this.renderLimpiar();
         }).catch((err)=>{
-            console.error("Error compra", err);
+            console.error("Error compra", err.message_);
         })
     }
 

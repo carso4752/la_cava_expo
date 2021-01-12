@@ -55,7 +55,7 @@ export default class Registro extends Component {
                     this.props.navigation.navigate('Perfil')
                 });
             }).catch(err => {
-                console.log("Error en el Registro", err)
+                console.log("Error en el Registro", err.message_)
                 this.refs.toastError.show('El correo ya esta en uso', 500, ()=>{
                     this.setState({ registro: false })
                 });

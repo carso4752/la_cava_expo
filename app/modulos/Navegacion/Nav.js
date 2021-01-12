@@ -41,7 +41,7 @@ function Carrito({item}) {
       style={{
         marginRight: normalize(10),
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         width: normalize(120),
       }}
     >
