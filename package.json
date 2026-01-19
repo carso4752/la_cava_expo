@@ -18,7 +18,7 @@
     "expo-location": "~9.0.0",
     "expo-notifications": "~0.7.2",
     "expo-permissions": "~9.3.0",
-    "firebase": "7.9.0",
+    "firebase": "7.24.0",
     "firesql": "2.0.2",
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.2",
